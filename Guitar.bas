@@ -3,7 +3,7 @@
 '========================================================================================================================================
 #Define __guitar__ 
 '========================================================================================================================================
-#Include Once "guitar.bi"
+#Include Once "Guitar.bi"
 '========================================================================================================================================
 Operator TGuitar.Cast() As Any Ptr 
 	Return this.guitar_img 
@@ -171,6 +171,7 @@ Sub TGuitar.draw_note(ByVal string_number As Integer, ByVal fret_number As Integ
 		Dim As Integer x, y
 		Dim As String * 2 note  
 		x = .get_fret_center_x(fret_number) - 8 ' two chars per note
+
 		If fret_number = 0 Then x -= 8
 		y = .get_string_center_y(string_number) - 8 		
 		note = ._strings(string_number).note(fret_number)  
@@ -178,4 +179,5 @@ Sub TGuitar.draw_note(ByVal string_number As Integer, ByVal fret_number As Integ
 		Draw String .guitar_img, (x,y), note, clr
 		.paint() 
 	End With   
+	
 End Sub

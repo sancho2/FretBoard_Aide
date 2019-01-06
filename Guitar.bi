@@ -2,9 +2,9 @@
 ' Guitar.bas
 '----------------------------------------------------------------------------------------------------------------------------------------
 #Ifndef __Sundry__
-	#Include Once "sundry.bi"
+	#Include Once "Sundry.bi"
 #EndIf 
-#Include Once "notes.bi" 
+#Include Once "Notes.bi" 
 #Ifndef __PALETTE__	
 	#Define __PURPLE			&HFF262144
 	#Define __PURPLE_BROWN	&HFF5f4351
@@ -120,8 +120,9 @@ End Type
 		'
 		With This 
 			For _string As Integer = 1 To 6 
-				For _fret As Integer = 0 To .fret_count
+				For _fret As Integer = 0 To .fret_count - 1
 					Dim As String s = Trim(.get_note(_string,_fret))
+					
 					If LCase(note) = lcase(s) Then
 						.draw_note(_string, _fret)
 					EndIf

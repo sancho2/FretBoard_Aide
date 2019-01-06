@@ -18,10 +18,10 @@ Const As ULong STATUS_BAR_LEFT = 58, STATUS_BAR_TOP = 233, STATUS_BAR_RIGHT = 91
 	Dim As Integer __string, __fret
 #EndMacro
 '=======================================================================================================================================
-#Include Once "sundry.bi"
-#Include Once "palette.bi"
-#Include Once "data.bi"  
-#Include Once "guitar.bas"  
+#Include Once "Sundry.bi"
+#Include Once "Palette.bi"
+#Include Once "Data.bi"  
+#Include Once "Guitar.bas"  
 '=======================================================================================================================================
 Namespace Main_ 
 
@@ -84,14 +84,14 @@ Namespace Main_
 	'Static Shared As TButton exit_btn
 	Static Shared As TGRect Ptr pExit_btn 
 	'=======================================================================================================================================
-	#Include Once "status.bi"
+	#Include Once "Status.bi"
 	#Include Once "menubar.bi" 
-	#Include Once "notebar.bi"
-	#Include Once "graphics.bi"
+	#Include Once "NoteBar.bi"
+	#Include Once "Graphics.bi"
 	#Include Once "NoteBrowser.bi"
-	#Include Once "scalebrowser.bi"
+	#Include Once "ScaleBrowser.bi"
 	#Include Once "ModeMenu.bi"
-	#Include Once "mainmenu.bi"
+	#Include Once "MainMenu.bi"
 	'=======================================================================================================================================
 	Sub init()
 		'
