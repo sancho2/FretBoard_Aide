@@ -179,7 +179,7 @@ Namespace NoteBrowser_
 	End Sub
 	Sub clear_notes() 
 		'
-		Main_._guitar.revert()
+		Main_._pGuitar->revert()
 		ReDim NoteBrowser_.notes(0 To 0)		' resize the array to 1 element because this is as low as I can go  							
 		NoteBrowser_.note_count = 0
 		NoteBar_.set_selected(FALSE) 
@@ -205,14 +205,14 @@ Namespace NoteBrowser_
 				 remove_array_element(Cast(String, note), NoteBrowser_.notes()) 
 			EndIf 
 		EndIf
-		Main_._guitar.revert()
+		Main_._pGuitar->revert()
 		NoteBrowser_.draw_notes()	
 		
 	End Sub
 	Sub draw_notes() 
 		'
 		For i As Integer = 1 To NoteBrowser_.note_count
-			Main_._guitar.draw_note(NoteBrowser_.notes(i)) 
+			Main_._pGuitar->draw_note(NoteBrowser_.notes(i)) 
 		Next
 	End Sub
 	

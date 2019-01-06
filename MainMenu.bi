@@ -17,7 +17,6 @@ Namespace MainMenu_
 '---------------------------------------------------------    
  
 	Static Shared As MenuBar_.TMenuButton Ptr buttons(Any) 
-	'Static Shared As MenuBar_.TMenuButton menu_btn(1 To 3)  
 	'========================================================================================================================================
 	Sub init()  
 		'
@@ -46,7 +45,7 @@ Namespace MainMenu_
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 		'
 		' exit button 
-		If Main_.exit_btn.hotspot.is_point_in_rect(pnt) Then 
+		If Main_.pExit_btn->is_point_in_rect(pnt) Then 
 			key = "x"
 			Return 
 		EndIf

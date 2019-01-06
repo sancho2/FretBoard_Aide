@@ -375,7 +375,7 @@ End Type
 		
 	End Sub
 #Ifndef __edit2
-#Ifndef __sundry 	
+#Ifndef __Sundry__ 	
 Sub test(ByVal value As Integer) 
 	? value 
 End Sub

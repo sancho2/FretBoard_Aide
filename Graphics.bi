@@ -70,7 +70,7 @@ Sub draw_shadow(	ByRef txt As Const String, ByVal x As Integer, ByVal y As Integ
 End Sub
 Sub draw_title() 
 	'
-	Dim As Integer l = _guitar.left_x, y = 32
+	Dim As Integer l = Main_._pGuitar->left_x, y = 32
 	draw_shadow("FretBoard-Aide", l +14, y, pal.CYAN, pal.DARK_BLUEGRAY, 2) 
 
 	'Draw String (l + 808, y+2),"Sancho 0.01a", pal.DARK_BLUEGRAY  

@@ -130,7 +130,7 @@ Namespace Status_
 		If x = 0 Then x = STATUS_BAR_LEFT 
 		If x < 0 Then 
 			x = (870 - (Len(txt) * 8)) \ 2 
-			x += _guitar.left_x 
+			x += Main_._pGuitar->left_x 
 		EndIf
 		Draw String (x, y), txt, clr
 	End Sub

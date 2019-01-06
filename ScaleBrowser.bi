@@ -118,7 +118,7 @@ Namespace ScaleBrowser_
 	End Function
 	Sub clear_notes() 
 		'
-		Main_._guitar.revert()
+		Main_._pGuitar->revert()
 		ReDim ScaleBrowser_.notes(0 To 0)		' resize the array to 1 element because this is as low as I can go  							
 		ScaleBrowser_.note_count = 0
 		ScaleBrowser_.clear_status() 
@@ -167,7 +167,7 @@ Namespace ScaleBrowser_
 	Sub draw_notes() 
 		'
 		For i As Integer = 1 To ScaleBrowser_.note_count
-			Main_._guitar.draw_note(ScaleBrowser_.notes(i)) 
+			Main_._pGuitar->draw_note(ScaleBrowser_.notes(i)) 
 		Next
 	End Sub
 	Sub destroy() Destructor 

@@ -120,7 +120,7 @@ Sub TGuitar._draw_hotspots()
 	With This 
 		For s As Integer = 1 To 6 Step 2 
 			For f As integer = 4 To 4  '.fret_count Step 2
-				Line .guitar_img, (_hotspots(s, f).x1, _hotspots(s,f).y1)-(_hotspots(s,f).x2, _hotspots(s,f).y2), pal.GREEN, bf 
+				Line .guitar_img, (_hotspots(s, f).x1, _hotspots(s,f).y1)-(_hotspots(s,f).x2, _hotspots(s,f).y2), __GREEN, bf 
 			Next
 		Next
 	End With 

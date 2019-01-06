@@ -1,9 +1,25 @@
 '----------------------------------------------------------------------------------------------------------------------------------------
 ' Guitar.bas
 '----------------------------------------------------------------------------------------------------------------------------------------
-#Include Once "sundry.bi"
-#Include Once "palette.bi"
+#Ifndef __Sundry__
+	#Include Once "sundry.bi"
+#EndIf 
 #Include Once "notes.bi" 
+#Ifndef __PALETTE__	
+	#Define __PURPLE			&HFF262144
+	#Define __PURPLE_BROWN	&HFF5f4351
+	#Define __CYAN 			&HFF91d9f3
+	#Define __GRAY				&HFF898989
+	#Define __CLAY				&HFFbfb588
+	#Define __GREEN 			&HFF6ea92c
+#Else 
+	#Define __PURPLE			pal.PURPLE
+	#Define __PURPLE_BROWN	pal.PURPLE_BROWN
+	#Define __CYAN 			pal.CYAN
+	#Define __GRAY				pal.GRAY
+	#Define __CLAY				pal.CLAY
+	#Define __GREEN 			pal.GREEN
+#EndIf 
 '----------------------------------------------------------------------------------------------------------------------------------------
 #Define __FRET_RATIO 1.059463
 #Define __RULE_OF_18 17.817153
@@ -46,12 +62,13 @@ Type TGuitar
 	As ULong scale_length 
 	As ULong neck_length
 	As Integer nut_width 
-	As ULong border_color = pal.PURPLE
-	As ULong fill_color = pal.PURPLE_BROWN
-	As ULong dot_color = pal.PURPLE 
-	As ULong string_color = pal.CYAN
-	As ULong nut_color = pal.CLAY
-	As ULong fret_color = pal.GRAY	   
+
+	As ULong border_color = __PURPLE			''pal.PURPLE
+	As ULong fill_color = __PURPLE_BROWN	'pal.PURPLE_BROWN
+	As ULong dot_color = __PURPLE				'pal.PURPLE 
+	As ULong string_color = __CYAN			'pal.CYAN
+	As ULong nut_color = __CLAY				'pal.CLAY
+	As ULong fret_color =__GRAY				' pal.GRAY	   
 	'--------------------------------------------------
 	Declare Constructor()
 	Declare Destructor()  

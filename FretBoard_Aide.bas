@@ -11,25 +11,17 @@ Const As Double PHASE_1_TIME = 10, PHASE_2_TIME = 30, PHASE_3_TIME = 50
 Const As ULong MENU_BAR_TOP = 27, MENU_BAR_BOTTOM = 53, MENU_BAR_LEFT = 220, MENU_BAR_RIGHT = 840
 Const As ULong STATUS_BAR_LEFT = 58, STATUS_BAR_TOP = 233, STATUS_BAR_RIGHT = 914, STATUS_BAR_BOTTOM = 259  
 '---------------------------------------------------------------------------------------------------------------------------------------
-#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = @Main_._guitar
+'#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = @Main_._guitar
+#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = Main_._pGuitar
 
-#Macro __get_rand_string_fret(T)
-	__string = T##_guitar.get_random_string()
-	__fret = T##_guitar.get_random_fret() 
-#EndMacro
 #Macro  __dim_string_fret()
 	Dim As Integer __string, __fret
 #EndMacro
 '=======================================================================================================================================
-#Ifndef __data__
-	#Include Once "data.bi"  
-#EndIf 
-#Ifndef __guitar__
-	#Include Once "guitar.bas"  
-#EndIf 
-#Ifndef __sundry
-	#Include Once "sundry.bi"
-#EndIf 
+#Include Once "sundry.bi"
+#Include Once "palette.bi"
+#Include Once "data.bi"  
+#Include Once "guitar.bas"  
 '=======================================================================================================================================
 Namespace Main_ 
 
@@ -69,9 +61,9 @@ Namespace Main_
 			Return Type<TPoint>(this.x, this.y)
 		End Operator
 	'========================================================================================================================================
-	Type TButton
-		As TGRect hotspot
-	End Type
+	'Type TButton
+	'	As TGRect hotspot
+	'End Type
 	'========================================================================================================================================
 	' graphics.bi declarations 
 	Declare Sub init_exit_button()
@@ -88,8 +80,9 @@ Namespace Main_
 	Declare Sub main_loop()
 	Declare Sub on_exit()
 	'=======================================================================================================================================
-	Dim Shared As TGuitar _guitar
-	Static Shared As TButton exit_btn 
+	Static Shared As TGuitar Ptr _pGuitar
+	'Static Shared As TButton exit_btn
+	Static Shared As TGRect Ptr pExit_btn 
 	'=======================================================================================================================================
 	#Include Once "status.bi"
 	#Include Once "menubar.bi" 
@@ -103,6 +96,7 @@ Namespace Main_
 	Sub init()
 		'
 		Cls 
+		Main_._pGuitar = New TGuitar 
 		__dim_guitar_ptr
 		
 		pGtr->init(GUITAR_LEFT_X, GUITAR_TOP_Y, GUITAR_NECK_WIDTH, GUITAR_FRET_COUNT, SCALE_LENGTH, GUITAR_NECK_LENGTH, GUITAR_NUT_WIDTH)
@@ -118,9 +112,15 @@ Namespace Main_
 		Status_.draw_text("Exit", 926, pal.CYAN)
 		Status_.draw_text("x", 934, pal.RED)
 	
-		exit_btn.hotspot = Type<TRect>(x, y, x+50, y+24)
+		'pExit_btn.hotspot = Type<TRect>(x, y, x+50, y+24)
+		pExit_btn = New TGRect
+		*pExit_btn = Type<TRect>(x, y, x+50, y+24)
 	End Sub
 	Sub on_exit() Destructor
+		If pExit_btn <> 0 Then
+			Delete pExit_btn 
+			pExit_btn = 0
+		EndIf
 		? "destructor"
 	End Sub
 
