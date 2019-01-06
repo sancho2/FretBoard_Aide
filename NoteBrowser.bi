@@ -193,6 +193,7 @@ Namespace NoteBrowser_
 				 NoteBrowser_.note_count += 1
 				 ReDim Preserve NoteBrowser_.notes(1 To NoteBrowser_.note_count)
 				 NoteBrowser_.notes(NoteBrowser_.note_count) = UCase(note)  
+
 			EndIf 
 		EndIf
 		NoteBrowser_.draw_notes()	

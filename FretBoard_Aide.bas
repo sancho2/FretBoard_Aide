@@ -25,10 +25,10 @@ Const As ULong STATUS_BAR_LEFT = 58, STATUS_BAR_TOP = 233, STATUS_BAR_RIGHT = 91
 	#Include Once "data.bi"  
 #EndIf 
 #Ifndef __guitar__
-	#Include Once "guitar.bas"  
+	#Include Once "Guitar.bas"
 #EndIf 
 #Ifndef __sundry
-	#Include Once "sundry.bi"
+	#Include Once "Sundry.bi"
 #EndIf 
 '=======================================================================================================================================
 Namespace Main_ 
@@ -91,14 +91,14 @@ Namespace Main_
 	Dim Shared As TGuitar _guitar
 	Static Shared As TButton exit_btn 
 	'=======================================================================================================================================
-	#Include Once "status.bi"
+	#Include Once "Status.bi"
 	#Include Once "menubar.bi" 
-	#Include Once "notebar.bi"
-	#Include Once "graphics.bi"
+	#Include Once "NoteBar.bi"
+	#Include Once "Graphics.bi"
 	#Include Once "NoteBrowser.bi"
-	#Include Once "scalebrowser.bi"
+	#Include Once "ScaleBrowser.bi"
 	#Include Once "ModeMenu.bi"
-	#Include Once "mainmenu.bi"
+	#Include Once "MainMenu.bi"
 	'=======================================================================================================================================
 	Sub init()
 		'

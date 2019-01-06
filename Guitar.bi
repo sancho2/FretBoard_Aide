@@ -1,9 +1,9 @@
 '----------------------------------------------------------------------------------------------------------------------------------------
 ' Guitar.bas
 '----------------------------------------------------------------------------------------------------------------------------------------
-#Include Once "sundry.bi"
+#Include Once "Sundry.bi"
 #Include Once "palette.bi"
-#Include Once "notes.bi" 
+#Include Once "Notes.bi" 
 '----------------------------------------------------------------------------------------------------------------------------------------
 #Define __FRET_RATIO 1.059463
 #Define __RULE_OF_18 17.817153
@@ -103,8 +103,9 @@ End Type
 		'
 		With This 
 			For _string As Integer = 1 To 6 
-				For _fret As Integer = 0 To .fret_count
+				For _fret As Integer = 0 To .fret_count - 1
 					Dim As String s = Trim(.get_note(_string,_fret))
+					
 					If LCase(note) = lcase(s) Then
 						.draw_note(_string, _fret)
 					EndIf
