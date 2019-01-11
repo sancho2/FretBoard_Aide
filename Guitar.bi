@@ -12,13 +12,6 @@
 	#Define __GRAY				&HFF898989
 	#Define __CLAY				&HFFbfb588
 	#Define __GREEN 			&HFF6ea92c
-#Else 
-	#Define __PURPLE			pal.PURPLE
-	#Define __PURPLE_BROWN	pal.PURPLE_BROWN
-	#Define __CYAN 			pal.CYAN
-	#Define __GRAY				pal.GRAY
-	#Define __CLAY				pal.CLAY
-	#Define __GREEN 			pal.GREEN
 #EndIf 
 '----------------------------------------------------------------------------------------------------------------------------------------
 #Define __FRET_RATIO 1.059463
@@ -122,9 +115,8 @@ End Type
 			For _string As Integer = 1 To 6 
 				For _fret As Integer = 0 To .fret_count - 1
 					Dim As String s = Trim(.get_note(_string,_fret))
-					
-					If LCase(note) = lcase(s) Then
-						.draw_note(_string, _fret)
+					If LCase(Trim(note)) = lcase(Trim(s)) Then
+						.draw_note(_string, _fret, clr)
 					EndIf
 				Next
 			Next

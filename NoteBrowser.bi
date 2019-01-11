@@ -6,8 +6,9 @@
 Namespace NoteBrowser_
 	Static Shared As String notes(any)
 	Static Shared As Integer note_count
-	'Static Shared As MenuBar_.TMenuButton Ptr add_btn 
-	Static Shared As MenuBar_.TMenuButton Ptr clear_btn 
+	'Static Shared As Button_.TButton Ptr add_btn 
+	'Static Shared As Button_.TButton Ptr clear_btn
+	Static Shared As Button_.TButton Ptr clear_btn  
 	'========================================================================================================================================
 	Declare Function main_loop() As boolean 
 	Declare Sub add_note(ByRef note As Const String) 
@@ -16,7 +17,7 @@ Namespace NoteBrowser_
 	Declare Sub parse_input(ByRef txt As Const String) 	
 	Declare Sub draw_notes()
 	Declare Sub clear_notes()
-	Declare Sub clear_status()
+	'Declare Sub clear_status()
 	Declare Sub remove_buttons() 
 	Declare Sub on_exit()
 	Declare Sub destroy() 		'Destructor 
@@ -27,50 +28,45 @@ Namespace NoteBrowser_
 		'MenuBar_.remove_button_by_name("add")
 		MenuBar_.remove_button_by_name("clr") 
 	End Sub
-	Sub clear_status() 
-		'
-		Main_.Clear_status_bar(-1, 661)
-	End Sub
+	'Sub clear_status() 
+	'	'
+	'	Main_.Clear_status_bar(-1, 661)
+	'End Sub
 	Sub draw_status() 
 		'
 		Dim As String txt = "Notes: " & string_array_to_string(notes()) 
-		Status_.draw_text(txt, 0,, FALSE)
+		StatusBar_.draw_text(txt, 0,, FALSE)
 	
 	End Sub
 	Sub init()  
 		'
 		Dim As Integer x
 	
-		Status_.draw_text("Note Browser")
+		StatusBar_.draw_text("Note Browser")
 
 		' grey out the main menu 
-		Dim As MenuBar_.TMenuButton Ptr mb = @(MenuBar_.get_button_by_name("mode"))
-		mb->enabled = FALSE
-		mb->Draw()   
+		Dim As Button_.TButton Ptr mb = @(MenuBar_.get_button_by_name("mode"))
+		mb->draw_disabled()   
 
 		mb = @(MenuBar_.get_button_by_name("file"))
-		mb->enabled = FALSE 
-		mb->draw()
+		mb->draw_disabled
 		mb = @(MenuBar_.get_button_by_name("help"))
-		mb->enabled = FALSE 		
-		mb->draw()
+		mb->draw_disabled()
 
-		' draw the notebar grey
+		' draw the notebar unselected
 		x = mb->x2 + 6
 		NoteBar_.create_note_bar(x) 
 		NoteBar_.Draw(FALSE)
 		
-		mb = @(MenuBar_.get_button_by_name(" G# "))
-		x = mb->x2 + 6
-
-		NoteBrowser_.clear_btn = New MenuBar_.TMenuButton
-		*NoteBrowser_.clear_btn = MenuBar_.create_menu_button("Clr", x,"clr",3)
+		x = STATUS_CLIENT_LEFT
+		'NoteBrowser_.clear_btn = New Button_.TButton(Button_.TButtonClass.bcCommand)
+		NoteBrowser_.clear_btn = StatusBar_.create_button("Clr", x,,"clr",3)
 
 	End Sub 
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 		'
 		For i As Integer = 1 To 12
-			Dim As MenuBar_.TMenuButton Ptr pB = NoteBar_.buttons(i) 
+			Dim As Button_.TButton Ptr pB = NoteBar_.buttons(i) 
 			If pB->is_point_in_rect(pnt) = TRUE Then 
 				pB->toggle_selected()	' draw_selected()
 				If pB->selected = TRUE Then 
@@ -99,13 +95,6 @@ Namespace NoteBrowser_
 				mouse.poll() 
 				If mouse.is_button_released(mbLeft) Then
 					poll_buttons(Cast(TPoint, mouse), key) 
-					
-					'If NoteBrowser_.add_btn->is_point_in_rect(Cast(TPoint, mouse)) Then  
-					'	' 
-					'	key = "a"
-					'ElseIf NoteBrowser_.clear_btn->is_point_in_rect(Cast(TPoint, mouse)) Then 
-					'	key = "c"
-					'EndIf
 				EndIf
 				If key = "" Then 
 					key = InKey()
@@ -114,7 +103,7 @@ Namespace NoteBrowser_
 			Loop While key = ""
 			Select Case key
 				Case "a" To "g"
-					Dim As MenuBar_.TMenuButton Ptr pB = @(NoteBar_.get_button_by_name(key)) 
+					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key)) 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)
@@ -122,7 +111,7 @@ Namespace NoteBrowser_
 						key = "-" & Trim(pB->Name) 
 					EndIf
 				Case "A" To "G"
-					Dim As MenuBar_.TMenuButton Ptr pB = @(NoteBar_.get_button_by_name(key & "#")) 
+					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key & "#")) 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)
@@ -160,7 +149,7 @@ Namespace NoteBrowser_
 		NoteBrowser_.remove_buttons() 
 		NoteBrowser_.clear_notes()
 
-		Dim As MenuBar_.TMenuButton Ptr mb = @(MenuBar_.get_button_by_name("mode")) 
+		Dim As Button_.TButton Ptr mb = @(MenuBar_.get_button_by_name("mode")) 
 		mb->draw()
 		mb = @(MenuBar_.get_button_by_name("file"))
 		mb->draw()
@@ -193,7 +182,6 @@ Namespace NoteBrowser_
 				 NoteBrowser_.note_count += 1
 				 ReDim Preserve NoteBrowser_.notes(1 To NoteBrowser_.note_count)
 				 NoteBrowser_.notes(NoteBrowser_.note_count) = UCase(note)  
-
 			EndIf 
 		EndIf
 		NoteBrowser_.draw_notes()	

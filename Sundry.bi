@@ -20,6 +20,10 @@ Const As Long SC_LSHIFT = &H2A, _
 #Ifndef GFX_FULLSCREEN 
 	#Define GFX_FULLSCREEN 1 
 #EndIf
+'--------------------------------------------------------------------------------
+#Define HiDWord(e)   ( CULng( ( CULngInt( (e) ) And &hFFFFFFFF00000000ull ) Shr 32 ) ) ' return Type=ULong
+#Define LoDWord(e)   ( CULng( CULngInt( (e) ) And &h00000000FFFFFFFFull ) )  ' return Type=ULong
+'--------------------------------------------------------------------------------
 Type TRandom 
 	Declare Static Function get_rnd(ByVal min As Integer, ByVal max As Integer) As Integer
 	Declare Constructor()
@@ -38,7 +42,7 @@ End Type
 		Randomize seed
 		this._is_init = TRUE  
 	End Constructor
-	Function TRandom.get_rnd(ByVal min As Integer, ByVal max As Integer) As Integer
+	Private Function TRandom.get_rnd(ByVal min As Integer, ByVal max As Integer) As Integer
 		'
 		Return Int(Rnd * (max - min + 1) + min) 
 	End Function
@@ -121,7 +125,7 @@ End Type
 		this.y1 += rhs.y
 		this.y2 += rhs.y
 	End Operator
-	Function TRect.is_point_in_rect(Byref value As TVector2d) As Boolean
+	Private Function TRect.is_point_in_rect(Byref value As TVector2d) As Boolean
 		'
 		Dim As TRange r
 		r.x1 = this.x1
@@ -135,12 +139,12 @@ End Type
 		If r.value_in_range(value.y) = false Then Return False 
 		Return True 
 	End Function
-	Sub TRect.horiz_shift(Byval amount As Ulong) 
+	Private Sub TRect.horiz_shift(Byval amount As Ulong) 
 		'
 		this.x1 += amount 
 		this.x2 += amount 	
 	End Sub
-	Sub TRect.vert_shift(Byval amount As ulong)
+	Private Sub TRect.vert_shift(Byval amount As ulong)
 		this.y1 += amount
 		this.y2 += amount 	
 	End Sub
@@ -167,7 +171,7 @@ End Type
 		End With
 	End Constructor
 	'---------------------------------------------------------
-	Sub TGraphicsRect.draw(ByVal pTarget As Any Ptr = 0)
+	Private Sub TGraphicsRect.draw(ByVal pTarget As Any Ptr = 0)
 		With This		
 			If pTarget = 0 Then 
 				Line (.x1,.y1)-(.x2,.y2), back_color, bf 
@@ -227,18 +231,18 @@ End Type
 	While InKey<>"":Wend
 #EndMacro 
 '--------------------------------------------------------------------------
-sub draw_centered_string(Byref s As string, Byval y As Integer, Byval c As Ulong)
+Private Sub draw_centered_string(Byref s As string, Byval y As Integer, Byval c As Ulong)
 	'
 	dim As Integer w = Len(s) * _CHAR_WIDTH, x
 	x = (1024 - w) \ 2
 	Draw String (x, y), s, c
 End Sub
 '--------------------------------------------------------------------------
-#include Once "log.bi"
+'#include Once "log.bi"
 
 '#include Once "Button.bi"
 '--------------------------------------------------------------------------
-Function zero_prefix_number(ByVal number As Integer, ByVal count As Integer = 6) As String
+Private Function zero_prefix_number(ByVal number As Integer, ByVal count As Integer = 6) As String
 	'
 	Dim As String s = Str(number) 
 	While Len(s) < count  
@@ -246,7 +250,7 @@ Function zero_prefix_number(ByVal number As Integer, ByVal count As Integer = 6)
 	Wend
 	Return s 
 End Function
-Function string_array_to_string(s() As String, ByRef delim As String = " ") As String 
+Private Function string_array_to_string(s() As String, ByRef delim As String = " ") As String 
 	'
 	Dim As String ret_val 
 	For i As Integer = LBound(s) To UBound(s) 
@@ -328,14 +332,14 @@ Private Function Split_tok_r(byref TEXT As String , byref DELIMIT As String ,  R
    if size1 > ctr then Redim preserve RET(1 To ctr)     'redim the array
    Return ctr
 end Function
-Function is_value_in_array(ByRef s As Const String, array() As String) As boolean
+Private Function is_value_in_array(ByRef s As Const String, array() As String) As boolean
 	'
 	For i As Integer = LBound(array) To UBound(array) 
 		If s = array(i) Then Return TRUE 
 	Next
 	Return FALSE 
 End Function
-Sub remove_array_element OverLoad (ByVal index As Integer, array() As Any Ptr) 
+Private Sub remove_array_element OverLoad (ByVal index As Integer, array() As Any Ptr) 
 	'
 	' remove element from a pointer array via index 
 	Dim As Integer l, u, n  
@@ -350,7 +354,7 @@ Sub remove_array_element OverLoad (ByVal index As Integer, array() As Any Ptr)
 	ReDim Preserve array(l To n) 
 			
 End Sub
-Sub remove_array_element(ByRef element As String, array() As String) 
+Private Sub remove_array_element(ByRef element As String, array() As String) 
 	'
 	' remove element from string array via string matching 
 	Dim As Integer l, u, n  

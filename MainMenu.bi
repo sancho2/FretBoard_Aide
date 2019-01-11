@@ -16,7 +16,7 @@ Namespace MainMenu_
 #Define __help MainMenu_.buttons(3) 
 '---------------------------------------------------------    
  
-	Static Shared As MenuBar_.TMenuButton Ptr buttons(Any) 
+	Static Shared As Button_.TButton Ptr buttons(Any) 
 	'========================================================================================================================================
 	Sub init()  
 		'
@@ -25,21 +25,17 @@ Namespace MainMenu_
 		ReDim MainMenu_.buttons(1 To 3) 
 		
 		x = MENU_BAR_LEFT
-		'x = mb.x2 + 6
-		__mode = New MenuBar_.TMenuButton
-		*(__mode) = MenuBar_.create_menu_button("Main", x,"mode")
-		__mode->enabled = TRUE 
+		__mode = New Button_.TButton(Button_.TButtonClass.bcCommand)
+		*(__mode) = MenuBar_.create_button("Main", x,,"mode",,,FALSE)
 
-		'x = (MenuBar_.get_button_by_name("add")).x2 + 6
 		x = (__mode)->x2 + 6
-		__file = New MenuBar_.TMenuButton
-		*(__file) = MenuBar_.create_menu_button("File", x,"file")
-		__file->enabled = FALSE 
+		__file = New Button_.TButton(Button_.TButtonClass.bcCommand)
+		*(__file) = MenuBar_.create_button("File", x,,"file",,FALSE, FALSE)
 
 		x = (__file)->x2 + 6
-		__help = New MenuBar_.TMenuButton
-		*(__help) = MenuBar_.create_menu_button("Help", x,"help")
-		__help->enabled = FALSE
+		__help = New Button_.TButton(Button_.TButtonClass.bcCommand)
+		*(__help) = MenuBar_.create_button("Help", x,,"help",,FALSE, FALSE)
+
 	End Sub 
 
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
@@ -50,31 +46,27 @@ Namespace MainMenu_
 			Return 
 		EndIf
 		' main button
-		If __mode->is_point_in_rect(pnt) Then
-			If __mode->enabled = TRUE Then  
-				key = "m"
-			EndIf 
-			Return
-		ElseIf __file->is_point_in_rect(pnt) Then 
-			If __file->enabled = TRUE Then 
-				key = "f"
-			EndIf
-		ElseIf __help->is_point_in_rect(pnt) Then 
-			If __help->enabled = TRUE Then 
-				key = "h"
-			EndIf
+		If __mode->poll(pnt) = TRUE Then 
+			key = "m"
+			Return 
+		ElseIf __file->poll(pnt) = TRUE Then 
+			key = "f"
+			Return 
+		ElseIf __help->poll(pnt) = TRUE Then 
+			key = "h"
+			Return 
 		EndIf
 	End Sub
 	Sub show()
 		'
 		MenuBar_.draw_back()  
-		__mode->draw() 
-		__file->draw_grey() 
-		__help->draw_grey() 
+		__mode->draw()
+		__file->Draw()
+		__help->Draw() 
 
 		Dim As String key
 		Dim As TGMouse mouse 
-		Status_.draw_text("Main Menu")
+		StatusBar_.draw_text("Main Menu")
 		Do
 			mouse.poll()
 			If mouse.is_button_released(mbLeft) Then 
@@ -85,17 +77,23 @@ Namespace MainMenu_
 			EndIf
 			Select Case key 
 				Case "m"
-					__mode->hilite() 
+					'__mode ->hilite()
+					__mode->draw_selected() 
 					If ModeMenu_.show(*(__mode)) = FALSE Then Exit Do 
-					__mode->unhilite() 
+					'__mode->unhilite()
+					__mode->draw_unselected()  
 					key=""
 				Case "f"
-					? "file menu not handled"
-					Sleep
+					If __file->enabled = TRUE Then 
+						? "file menu not handled"
+						Sleep
+					EndIf 
 					key=""
 				Case "h"
-					?"help not handled"
-					Sleep 
+					If __help->enabled = TRUE Then 
+						?"help not handled"
+						Sleep
+					End If  
 					key=""
 				Case "x"
 					Exit Do 
@@ -115,6 +113,7 @@ Namespace MainMenu_
 	End Sub
 	Sub destroy() Destructor 
 		'
+
 		If __mode <> 0 Then 
 			Delete __mode
 			__mode = 0 

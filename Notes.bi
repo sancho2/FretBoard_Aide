@@ -39,9 +39,25 @@ Namespace Notes_
 	'========================================================================================================================================
 	Declare Sub create_noteset(ByRef root_note As Const String, ByRef note_set As TNoteSet)
 	Declare Sub get_n_notes_from_a(ByRef a As Const String, ByVal n As Integer, ret_val() As string)
-	Declare Function _get_note_index(ByRef note As Const String) As integer   
-	Declare Function is_valid_note(ByRef s As String) As boolean  
+	Declare Function is_valid_note(ByRef s As String) As boolean
+	Declare Function get_half_step(ByRef note As Const String) As String  
+	Declare Function get_whole_step(ByRef note As Const String) As String  
+	Declare Function _get_note_index(ByRef note As Const String) As Integer
 	'========================================================================================================================================
+	Function get_half_step(ByRef note As Const String) As String 
+		'
+		Dim As Integer index = Notes_._get_note_index(note) 
+		If index = 0 Then Return ""
+		If index = 12 Then Return Notes_.notes(1) 
+		Return notes(index + 1)  
+	End Function
+	Function get_whole_step(ByRef note As Const String) As String
+		'
+		Dim As Integer index = Notes_._get_note_index(note) 
+		If index = 0 Then Return ""
+		If index > 10 Then Return notes(1 + (1 - (12 - index)))
+		Return notes(index + 2)   
+	End Function
 	sub create_noteset(ByRef root_note As Const String, ByRef note_set As TNoteSet)
 		'
 		Dim As Integer r = _get_note_index(root_note), n, count = UBound(note_set.notes) 

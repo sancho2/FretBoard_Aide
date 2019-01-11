@@ -6,12 +6,12 @@
 Namespace ModeMenu_
 	'========================================================================================================================================
 	Declare Function show(ByRef parent_menu As TGrect) As boolean 
-	'Declare Function create_status_button(ByRef txt As Const String, ByVal x As Integer, ByVal key_index As Integer) As TGRect
+	'Declare Function create_status_button(ByRef txt As Const String, ByVal x As Integer, ByVal hotkey_index As Integer) As TGRect
 	Declare Function note_browser() As boolean
  	Declare Function scale_browser() As boolean 
 	Declare Sub destroy() 
 	Declare Function create_hotspot(ByRef txt As Const String, ByVal x As Integer, ByVal y As Integer, _
-									ByVal bounds As TRect, ByVal key_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
+									ByVal bounds As TRect, ByVal hotkey_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
 	'========================================================================================================================================
 	Private Function show(ByRef parent_menu As TGrect) As boolean 
 		'
@@ -42,7 +42,7 @@ Namespace ModeMenu_
 		hotspots(1) = create_hotspot("Note Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13))  
 	
 		y += 16
-		hotspots(2) = create_hotspot("Scale Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13), 5)  
+		hotspots(2) = create_hotspot("Scale Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13))  
 	
 		y += 16  
 		hotspots(3) = create_hotspot("Exit", x, y, Type<TRect>(x-8, y-1, x+88, y+13))  
@@ -84,7 +84,7 @@ Namespace ModeMenu_
 		End Select
 		
 		__HIDE_ACTION_MENU__()
-		Status_.draw_text("Main Menu") 
+		StatusBar_.draw_text("Main Menu") 
 	
 		ImageDestroy(restore_img) 
 		restore_img = 0
@@ -92,23 +92,18 @@ Namespace ModeMenu_
 	End Function
 	
 	Private Function create_hotspot(ByRef txt As Const String, ByVal x As Integer, ByVal y As Integer, _
-									ByVal bounds As TRect, ByVal key_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
+									ByVal bounds As TRect, ByVal hotkey_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
 		'
 		Dim As TGRect gr 
 		gr = Type<TRect>(bounds.x1, bounds.y1, bounds.x2, bounds.y2)
 		'gr.draw_filled(pal.BLUEGRAY)
 	
-		Dim As Integer hx = x + (8 * (key_index - 1))
-		Dim As String c = Mid(txt, key_index, 1) 
+		Dim As Integer hx = x + (8 * (hotkey_index - 1))
+		Dim As String c = Mid(txt, hotkey_index, 1) 
 		Draw String (x, y), txt, pal.CYAN
 		Draw String (hx, y), c, pal.RED
 	
 		Return gr
-		'Dim As TRect r = TRect(x-2, STATUS_BAR_TOP, x + 8, STATUS_BAR_TOP + 16)
-		'Dim As TRect r = TRect(x-2, y, x + 8, STATUS_BAR_TOP + 16)
-		'Draw String (x, STATUS_BAR_TOP), txt, clr
-		'Draw String (x, y), txt, clr   
-		'Return r 
 	End Function
 	Private Function note_browser() As boolean
 		'

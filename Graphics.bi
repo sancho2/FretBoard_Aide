@@ -7,9 +7,9 @@ Sub draw_guitar()
 	__dim_guitar_ptr 
 	Put(GUITAR_LEFT_X, GUITAR_TOP_Y), *pGtr, PSet 
 End Sub
-Sub Clear_status_bar(ByVal x1 As Integer = -1, ByVal x2 As Integer = STATUS_BAR_RIGHT + 1)
-	If x1 < 0 Then x1 = STATUS_BAR_LEFT - 4  
-	Line (x1, STATUS_BAR_TOP)-(x2, 259), pal.BLACK, bf
+Sub Clear_status_bar(ByVal x1 As Integer = -1, ByVal x2 As Integer = STATUS_CLIENT_RIGHT + 1)
+	If x1 < 0 Then x1 = STATUS_CLIENT_LEFT - 4  
+	Line (x1, STATUS_CLIENT_TOP)-(x2, 259), pal.BLACK, bf
 End Sub
 Sub draw_info_bar() 
 	' 
@@ -71,7 +71,7 @@ End Sub
 Sub draw_title() 
 	'
 	Dim As Integer l = Main_._pGuitar->left_x, y = 32
-	draw_shadow("FretBoard-Aide", l +14, y, pal.CYAN, pal.DARK_BLUEGRAY, 2) 
+	draw_shadow("Note Browser", l +14, y, pal.CYAN, pal.DARK_BLUEGRAY, 2) 
 
 	'Draw String (l + 808, y+2),"Sancho 0.01a", pal.DARK_BLUEGRAY  
 	'Draw String (l + 807, y+1),"Sancho 0.01a", pal.DARK_BLUEGRAY

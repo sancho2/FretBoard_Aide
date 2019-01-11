@@ -9,7 +9,8 @@ Const As ULong DEFAULT_SET_ROUND_COUNT = 5, DEFAULT_ROUND_COURSE_COUNT = 12, DEF
 Const As ULong GAME_BUTTON_LEFT = 220
 Const As Double PHASE_1_TIME = 10, PHASE_2_TIME = 30, PHASE_3_TIME = 50
 Const As ULong MENU_BAR_TOP = 27, MENU_BAR_BOTTOM = 53, MENU_BAR_LEFT = 220, MENU_BAR_RIGHT = 840
-Const As ULong STATUS_BAR_LEFT = 58, STATUS_BAR_TOP = 233, STATUS_BAR_RIGHT = 914, STATUS_BAR_BOTTOM = 259  
+Const As ULong STATUS_CLIENT_LEFT = 58, STATUS_CLIENT_TOP = 233, STATUS_CLIENT_RIGHT = 914, STATUS_CLIENT_BOTTOM = 259
+Const As ULong STATUS_BAR_LEFT = 50, STATUS_BAR_TOP = 230, STATUS_BAR_RIGHT = 971, STATUS_BAR_BOTTOM = 263   
 '---------------------------------------------------------------------------------------------------------------------------------------
 '#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = @Main_._guitar
 #Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = Main_._pGuitar
@@ -19,13 +20,7 @@ Const As ULong STATUS_BAR_LEFT = 58, STATUS_BAR_TOP = 233, STATUS_BAR_RIGHT = 91
 #EndMacro
 '=======================================================================================================================================
 #Include Once "Sundry.bi"
-#Include Once "Palette.bi"
-#Include Once "Data.bi"  
-#Include Once "Guitar.bas"  
-'=======================================================================================================================================
-Namespace Main_ 
-
-	'========================================================================================================================================
+'========================================================================================================================================
 	Type TGRect extends TRect
 		Declare Sub draw_border(ByVal clr As ULong)
 		Declare Sub draw_filled(ByVal clr As ULong)
@@ -40,18 +35,31 @@ Namespace Main_
 			Cast(TRect, This) = rhs '(rhs.x1, rhs.y1, rhs.x2, rhs.y2)
 		End Operator
 		'---------------------------------------------------------------------------------------------------------------------------------------
-		Sub TGRect.draw_border(ByVal clr As ULong)
+		Private Sub TGRect.draw_border(ByVal clr As ULong)
 			'
 			With This
 				Line (.x1, .y1)-(.x2, .y2), clr, b
 			End With
 		End Sub
-		Sub TGRect.draw_filled(ByVal clr As ULong)
+		Private Sub TGRect.draw_filled(ByVal clr As ULong)
 			'
 			With This
 				Line (.x1, .y1)-(.x2, .y2), clr, bf
 			End With
 		End Sub
+'========================================================================================================================================
+#Include Once "Palette.bi"
+#Include Once "Button.bi"
+#Include Once "Data.bi"  
+#Include Once "Guitar.bas"  
+'=======================================================================================================================================
+Namespace Main_ 
+
+	'=======================================================================================================================================
+	Static Shared As TGuitar Ptr _pGuitar
+	Static Shared As TGRect Ptr pExit_btn 
+	'========================================================================================================================================
+	
 	'========================================================================================================================================
 	Type TGMouse extends TMouse
 		Declare Operator Cast() As TPoint 
@@ -80,20 +88,18 @@ Namespace Main_
 	Declare Sub main_loop()
 	Declare Sub on_exit()
 	'=======================================================================================================================================
-	Static Shared As TGuitar Ptr _pGuitar
-	'Static Shared As TButton exit_btn
-	Static Shared As TGRect Ptr pExit_btn 
-	'=======================================================================================================================================
-	#Include Once "Status.bi"
-	#Include Once "menubar.bi" 
+	#Include Once "StatusBar.bi"
+	#Include Once "MenuBar.bi" 
 	#Include Once "NoteBar.bi"
-	#Include Once "Graphics.bi"
 	#Include Once "NoteBrowser.bi"
 	#Include Once "ScaleBrowser.bi"
 	#Include Once "ModeMenu.bi"
 	#Include Once "MainMenu.bi"
 	'=======================================================================================================================================
-	Sub init()
+	'=======================================================================================================================================
+	#Include Once "Graphics.bi"
+	'=======================================================================================================================================
+	Private Sub init()
 		'
 		Cls 
 		Main_._pGuitar = New TGuitar 
@@ -102,21 +108,24 @@ Namespace Main_
 		pGtr->init(GUITAR_LEFT_X, GUITAR_TOP_Y, GUITAR_NECK_WIDTH, GUITAR_FRET_COUNT, SCALE_LENGTH, GUITAR_NECK_LENGTH, GUITAR_NUT_WIDTH)
 
 		draw_title()
-		Status_.init() 
+		Dim As TRect _ 
+		r = Type<Trect>(STATUS_BAR_LEFT, STATUS_BAR_TOP, STATUS_BAR_RIGHT, STATUS_BAR_BOTTOM), _ 
+		c = Type<Trect>(STATUS_CLIENT_LEFT, STATUS_CLIENT_TOP, STATUS_CLIENT_RIGHT, STATUS_CLIENT_BOTTOM) 
+		StatusBar_.init(r, c) 
 		init_exit_button()
 		draw_guitar()
 	End Sub
-	Sub init_exit_button()
+	Private Sub init_exit_button()
 		Dim As Integer x = 916, y = 234
 		Line (x, y)-Step(50,24), pal.BLUEGRAY, bf   
-		Status_.draw_text("Exit", 926, pal.CYAN)
-		Status_.draw_text("x", 934, pal.RED)
+		StatusBar_.draw_text("Exit", 926, pal.CYAN)
+		StatusBar_.draw_text("x", 934, pal.RED)
 	
 		'pExit_btn.hotspot = Type<TRect>(x, y, x+50, y+24)
 		pExit_btn = New TGRect
 		*pExit_btn = Type<TRect>(x, y, x+50, y+24)
 	End Sub
-	Sub on_exit() Destructor
+	Private Sub on_exit() Destructor
 		If pExit_btn <> 0 Then
 			Delete pExit_btn 
 			pExit_btn = 0
