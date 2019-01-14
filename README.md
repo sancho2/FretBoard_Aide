@@ -13,7 +13,7 @@ As of Jan. 13, 2018 the program:
   - In both NoteBrowser and ScaleBrowser the notes are presented at the top as a set of 12 buttons. These can be pressed via mouse or by hotkeys. 
     - The hot keys for the natural notes are a, b, c, d, e, f, g. The hotkeys for the sharp notes are <shift> + a, b, c, d, e, f, g  
 There are going to be lots of issues at present but these I already know of: 
-- Exit button doesn't work in any but the main menu 
+- Exit button doesn't work in any but the main menu (Press escape to back out of anywhere in the program)
 - Scale buttons don't react to mouse clicks 
 - Pattern buttons don't react to mouse clicks 
 
@@ -36,6 +36,7 @@ NOTE: the split function by Marpon and the hidword/lodword macros by Mr. Swiss a
 Palette.bi  - This file defines colors that I limit the program to use. 
 Button.bi - This file defines a button class used in the menu bar accross the top and the status bar accross the bottom. 
 Data.bi - This file contains data for a feature that was in a previous incarnation but is not yet in development for the current program. (Ignore this) 
+Notes.bi  - This file contains classes that help to interact with musical notes and notation. 
 Guitar.bas/.bi  - These two files contain the definition of the TGuitar class that is used to display the guitar and find notes along its fret board. 
 StatusBar.bi  - This file contains the StatusBar_ namespace that is used to interact with the status bar at the bottom. 
 MenuBar.bi  - This file contains the MenuBar_ namespace that is used to interact with the menu bar accross the top.
@@ -46,6 +47,6 @@ ScaleBrowser.bi   - This file contains the ScaleBrowser_ namespace. This is the 
 ModeMenu.bi   - This is ModeMenu_ namespace. It handles the dropdown of the main menu. 
 MainMenu.bi   - This is the MainMenu_ namespace. It displays the three menu items Main, File, Help. (currently only Main is active) 
 Graphics.bi - This file is a hold-over from a previous incarnation. It does a few graphics display routines. It will likely get merged out of existance. 
-NoteBrowser.exe   - If you want to run the program without compiling it, this is a windows 7 executable. 
+aMain.exe   - If you want to run the program without compiling it, this is a windows 7 executable. Watch the commit note to see if it is up to date.
 Fretboard_aide.fbp  - This is a freebasic project file for the IDE FBEdit. 
 
