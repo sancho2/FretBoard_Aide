@@ -48,6 +48,21 @@ Const As ULong STATUS_BAR_LEFT = 50, STATUS_BAR_TOP = 230, STATUS_BAR_RIGHT = 97
 			End With
 		End Sub
 '========================================================================================================================================
+	Type TSeparaterBar extends TRect 
+		As ULong clr 
+		Declare Sub Draw() 
+		Declare Operator Let(ByRef rhs As TRect)   
+	End Type
+		Sub TSeparaterBar.draw()
+			With This 
+				Line(.x1, .y1)-(.x2,.y2), .clr, bf 
+			End With 
+		End Sub
+		Operator TSeparaterBar.Let(ByRef rhs As TRect)
+			'
+			Cast(TRect, This) = rhs '(rhs.x1, rhs.y1, rhs.x2, rhs.y2)
+		End Operator
+'========================================================================================================================================
 #Include Once "Palette.bi"
 #Include Once "Button.bi"
 #Include Once "Data.bi"  
@@ -87,10 +102,19 @@ Namespace Main_
 	Declare Sub init() 
 	Declare Sub main_loop()
 	Declare Sub on_exit()
+	'----------------------------------------------------------------------------------------------
+	' forward declarations 
+	'----------------------------------------------------------------------------------------------
+	Namespace MainMenu_
+		Declare Sub enable_menu() 
+		Declare Sub disable_menu()
+	End Namespace
+	'----------------------------------------------------------------------------------------------
 	'=======================================================================================================================================
 	#Include Once "StatusBar.bi"
 	#Include Once "MenuBar.bi" 
 	#Include Once "NoteBar.bi"
+	#Include Once "PatternBar.bi"
 	#Include Once "NoteBrowser.bi"
 	#Include Once "ScaleBrowser.bi"
 	#Include Once "ModeMenu.bi"

@@ -45,16 +45,14 @@ Namespace NoteBrowser_
 		StatusBar_.draw_text("Note Browser")
 
 		' grey out the main menu 
-		Dim As Button_.TButton Ptr mb = @(MenuBar_.get_button_by_name("mode"))
-		mb->draw_disabled()   
+		MainMenu_.disable_menu()
 
-		mb = @(MenuBar_.get_button_by_name("file"))
-		mb->draw_disabled
-		mb = @(MenuBar_.get_button_by_name("help"))
-		mb->draw_disabled()
+		' draw separater bar
+		Dim As Button_.TButton Ptr pMb = @(MenuBar_.get_button_by_name("help"))
+		x = Button_.draw_separater_bar(pMb) + 6 
 
 		' draw the notebar unselected
-		x = mb->x2 + 6
+		'x = pMb->x2 + 6
 		NoteBar_.create_note_bar(x) 
 		NoteBar_.Draw(FALSE)
 		
@@ -146,18 +144,23 @@ Namespace NoteBrowser_
 	End Function
 	Sub on_exit()
 		'
-		NoteBrowser_.remove_buttons() 
-		NoteBrowser_.clear_notes()
+		NoteBrowser_.remove_buttons()		' remove the clear button  
+		NoteBrowser_.clear_notes()			' clear the notes off the guitar 
 
-		Dim As Button_.TButton Ptr mb = @(MenuBar_.get_button_by_name("mode")) 
-		mb->draw()
-		mb = @(MenuBar_.get_button_by_name("file"))
-		mb->draw()
-		mb = @(MenuBar_.get_button_by_name("help"))		
-		mb->draw()
+		' remove the separater bar 
+		Dim As Integer x = NoteBar_.buttons(1)->x1 - 4, y1 = NoteBar_.buttons(1)->y1, y2 = NoteBar_.buttons(1)->y2 
+		Dim As TSeparaterBar sb 
+		sb = Type<TRect>(x, y1, x+4, y2)
+		sb.clr = pal.BLUEGRAY 
+		sb.draw()   
+		Line(x,y1)-Step(4,0), pal.BLACK
+		Line(x,y2)-Step(4,0), pal.BLACK
 
-		NoteBar_.remove()
+		NoteBar_.remove()			' remove the note bar
 		NoteBar_.destroy() 
+
+		MainMenu_.enable_menu()			' enable the main menu 
+
 		NoteBrowser_.destroy() 
 	End Sub
 	Sub destroy() Destructor 

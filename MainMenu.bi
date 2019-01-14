@@ -9,6 +9,7 @@ Namespace MainMenu_
 	Declare Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 	Declare Sub	show()
 	Declare Sub init() 
+	'Declare Sub disable_menu()
 	'========================================================================================================================================
 '---------------------------------------------------------    
 #Define __mode MainMenu_.buttons(1)
@@ -22,22 +23,37 @@ Namespace MainMenu_
 		'
 		Dim As Integer x
 	
+		MenuBar_.draw_back()  
+
 		ReDim MainMenu_.buttons(1 To 3) 
 		
 		x = MENU_BAR_LEFT
 		__mode = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__mode) = MenuBar_.create_button("Main", x,,"mode",,,FALSE)
+		*(__mode) = MenuBar_.create_button("Main", x,,"mode",,,TRUE)
+
 
 		x = (__mode)->x2 + 6
 		__file = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__file) = MenuBar_.create_button("File", x,,"file",,FALSE, FALSE)
+		*(__file) = MenuBar_.create_button("File", x,,"file",,FALSE, TRUE)
 
 		x = (__file)->x2 + 6
 		__help = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__help) = MenuBar_.create_button("Help", x,,"help",,FALSE, FALSE)
+		*(__help) = MenuBar_.create_button("Help", x,,"help",,FALSE, TRUE)
 
 	End Sub 
+	Sub enable_menu() 
+		'
+		__mode->Draw_enabled()
+		__file->Draw_disabled() 			' todo: implement file menu
+		__help->draw_disabled()				' todo: implement help menu 
 
+	End Sub
+	Sub disable_menu()
+		'
+		__mode->draw_disabled() 
+		__file->draw_disabled()
+		__help->draw_disabled()
+	End Sub
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 		'
 		' exit button 
@@ -59,10 +75,9 @@ Namespace MainMenu_
 	End Sub
 	Sub show()
 		'
-		MenuBar_.draw_back()  
-		__mode->draw()
-		__file->Draw()
-		__help->Draw() 
+		'__mode->draw()
+		'__file->Draw()
+		'__help->Draw() 
 
 		Dim As String key
 		Dim As TGMouse mouse 

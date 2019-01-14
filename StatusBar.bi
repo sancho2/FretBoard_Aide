@@ -77,6 +77,11 @@ Namespace StatusBar_
 		*(StatusBar_._pClient) = client 		  
 		draw_status_bar() 
 	End Sub
+	Sub Clear_status_bar(ByVal x1 As Integer = -1, ByVal x2 As Integer = STATUS_CLIENT_RIGHT + 1)
+		If x1 < 0 Then x1 = STATUS_CLIENT_LEFT - 4  
+		Line (x1, STATUS_CLIENT_TOP)-(x2, 259), pal.BLACK, bf
+	End Sub
+	
 	'Private Sub draw_text(ByRef stxt As Const TStatusText, ByVal wipe As boolean = TRUE) 
 	'	'
 	'	draw_text(stxt.txt, stxt.x, stxt.clr, wipe) 

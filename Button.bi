@@ -67,6 +67,7 @@ Namespace Button_
 		
 		Declare Function poll(ByRef pnt As TPoint) As boolean 
 		Declare Sub draw_passive() 				' draws passive button, sets passive to true
+		Declare Sub draw_enabled()					' draws enabled button, sets enabled to true  
 		Declare Sub draw_disabled()				' draws disabled button, set enabled to false 
 		Declare Sub draw_unselected()				' draws enabled button, set is_passive = false, is_selected = false     
 		Declare Sub draw_selected()				' draws selected button, sets selected to true 
@@ -228,14 +229,23 @@ Namespace Button_
 				Dim As String c = Mid(txt, .hotkey_index, 1) 
 
 				..Draw String (text_x, text_y), txt, pColors->text_color
-				..Draw String (hx, text_y), c, pColors->hotkey_color
-				
+				If .hotkey_index > 0 Then 
+					..Draw String (hx, text_y), c, pColors->hotkey_color
+				EndIf 
 			End With
 		End Sub
 		Sub TButton.draw_disabled() 
 			'
 			With This
+				._is_selected = FALSE 
 				._is_enabled = FALSE 
+				.draw()
+			End With
+		End Sub
+		Sub TButton.draw_enabled() 
+			'
+			With This
+				._is_enabled = TRUE  
 				.draw()
 			End With
 		End Sub
@@ -344,6 +354,7 @@ Namespace Button_
 			With This 
 				'If ._class = bcGroup Then
 				If .pGroup <> 0 Then  
+					'Locate 1,1:Print "moooo";timer
 					' this radio button is a member of a group therefore only 1 button in the group may be selected at a time
 					pGroup->toggle_button(@This)
 					'Cls
@@ -358,164 +369,15 @@ Namespace Button_
 			End With
 		End Sub
 		'========================================================================================================================================
-	'Type TButton extends TGRect 
-	'	As String Name  
-	'	As Integer text_x 
-	'	As Integer text_y
-	'	As String txt 
-	'	As Integer hotkey_index
-	'	As ULong text_color  
-	'	As ULong hotkey_color  
-	'	As ULong back_color 
-	'	As ULong border_color
-	'	Declare Sub _hilite()
-	'	Declare Sub _unhilite()()  
-	'	Declare Property passive() As boolean
-	'	Declare Property passive(ByVal value As boolean)  
-	'	Declare Property enabled() As boolean
-	'	Declare Property enabled(ByVal value As boolean)  
-	'	Declare Property selected() As boolean
-	'	Declare Property selected(ByVal value As boolean)  
-	'	Declare Operator Let(ByRef rhs As Const TRect)
-	'	Declare Sub xaw()
-	'	Declare Sub xaw_passive() 
-	'	Declare Sub xaw_grey()
-	'	Declare Sub xaw_unselected()    
-	'	Declare Sub xaw_selected(ByVal hotkey As boolean = FALSE)
-	'	Declare Sub toggle_selected(ByVal hotkey As boolean = FALSE) 
-	'	Private: 
-	'		As boolean _is_enabled
-	'		As boolean _is_selected 
-	'		As boolean _is_passive 
-	'End Type
-	''-----------------------------------------------------------------------------------------------------------------------------------
-	'	Property TButton.enabled() As boolean
-	'		'
-	'		Return this._is_enabled 
-	'	End Property
-	'	Property TButton.enabled(ByVal value As boolean)
-	'		'
-	'		this._is_enabled = value 
-	'	End Property
-	'	Property TButton.passive() As boolean
-	'		'
-	'		Return this._is_passive 
-	'	End Property
-	'	Property TButton.passive(ByVal value As boolean)
-	'		'
-	'		this._is_passive = value 
-	'	End Property
-	'	Property TButton.selected() As boolean
-	'		'
-	'		Return this._is_selected 
-	'	End Property
-	'	Property TButton.selected(ByVal value As boolean)
-	'		'
-	'		this._is_selected = value 
-	'	End Property
-	'	'-------------------------------------------------------------------------------------------------------------------------------------
-	'	Operator TButton.Let(ByRef rhs As Const TRect) 
-	'		Cast(TRect, This) = rhs  
-	'	End Operator
-	'	'-------------------------------------------------------------------------------------------------------------------------------------
-	'	Sub TButton._unhilite()() 
-	'		'
-	'		'this.xaw_border(this.border_color)
-	'		this.xaw()  
-	'	End Sub
-	'	Sub TButton._hilite() 
-	'		'
-	'		'this.xaw_border(__WHITE)
-	'		this.xaw_selected() 
-	'	End Sub
-	'	Sub TButton.toggle_selected(ByVal hotkey As boolean = FALSE)
-	'		'
-	'		With This 
-	'			If ._is_selected = TRUE Then 
-	'				._is_selected = FALSE
-	'				If hotkey = TRUE Then
-	'					.xaw()
-	'				Else
-	'					.xaw_unselected()
-	'				EndIf
-	'			Else
-	'				._is_selected = TRUE 
-	'				.xaw_selected(hotkey) 
-	'			EndIf
-	'		End With
-	'	End Sub
-	'	Sub TButton.xaw_passive() 
-	'		'
-	'		With This 
-	'			Dim As ULong source = __WHITE	' pal.BLUE 
-	'			Dim As ULong fcolor =  __DARK_BLUEGRAY	
-
-	'			.xaw_filled(fcolor)
-	'			.xaw_border(.border_color)
-	'			
-	'			..xaw String (text_x, text_y), txt, source 
-	'			
-	'			._is_passive = TRUE		' note that this is not how I handled selected or enabled    
-	'		End With
-	'	End Sub
-	'	Sub TButton.xaw_selected(ByVal hotkey As boolean = FALSE)
-	'		'
-	'		With This 
-	'			Dim As ULong source = __WHITE	 
-	'			Dim As ULong fcolor = __DARK_CYAN	
-
-	'			.xaw_filled(fcolor)
-	'			.xaw_border(.border_color)
-	'		
-	'			Dim As Integer hx = text_x + (8 * (.hotkey_index - 1))
-	'			Dim As String c = Mid(txt, .hotkey_index, 1) 
-	'			..xaw String (text_x, text_y), txt, source 
-	'			..xaw String (hx, text_y), c, __BROWN
-	'			
-	'		End With
-	'	End Sub
-	'	Sub TButton.xaw_unselected() 
-	'		'
-	'		With This 
-	'			.xaw_filled(.back_color)
-	'			.xaw_border(.border_color)
-	'		
-	'			'Dim As Integer hx = text_x + (8 * (.hotkey_index - 1))
-	'			'Dim As String c = Mid(txt, .hotkey_index, 1) 
-
-	'			..xaw String (text_x, text_y), txt, __CYAN 
-	'			'..xaw String (hx, text_y), c, __BROWN
-	'		End With
-	'	End Sub
-	'	Sub TButton.xaw_grey() 
-	'		'
-	'		With This 
-	'			.xaw_filled(.back_color)
-	'			.xaw_border(.border_color)
-	'		
-	'			Dim As Integer hx = text_x + (8 * (.hotkey_index - 1))
-	'			Dim As String c = Mid(txt, .hotkey_index, 1) 
-
-	'			..xaw String (text_x, text_y), txt, __GRAY
-	'			..xaw String (hx, text_y), c, __BROWN
-	'		End With
-	'	End Sub
-	'	Sub TButton.xaw()
-	'		'
-	'		With This
-	'			If ._is_enabled = FALSE Then 
-	'				.xaw_grey() 
-	'				Return 
-	'			EndIf
-	'			.xaw_filled(.back_color)
-	'			.xaw_border(.border_color)
-	'		
-	'			Dim As Integer hx = text_x + (8 * (.hotkey_index - 1))
-	'			Dim As String c = Mid(txt, .hotkey_index, 1) 
-
-	'			..xaw String (text_x, text_y), txt, .text_color
-	'			..xaw String (hx, text_y), c, .hotkey_color
-	'		End With 
-	'	End Sub
-
+	Function draw_separater_bar(ByVal pButton As Button_.TButton Ptr) As Integer 
+		' draw separater bar and return the x2 
+		'Dim As Button_.TButton Ptr pMb = @(MenuBar_.get_button_by_name("help"))
+		Dim As Integer x
+		x = pButton->x2 + 1
+		Dim As TSeparaterBar sb 
+		sb = Type<TRect>(x, pButton->y1,x + 4, pButton->y2)
+		sb.clr =  __DARK_BLUEGRAY 
+		sb.draw() 
+		Return sb.x2 
+	End Function 
 End Namespace

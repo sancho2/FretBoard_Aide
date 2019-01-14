@@ -7,10 +7,6 @@ Sub draw_guitar()
 	__dim_guitar_ptr 
 	Put(GUITAR_LEFT_X, GUITAR_TOP_Y), *pGtr, PSet 
 End Sub
-Sub Clear_status_bar(ByVal x1 As Integer = -1, ByVal x2 As Integer = STATUS_CLIENT_RIGHT + 1)
-	If x1 < 0 Then x1 = STATUS_CLIENT_LEFT - 4  
-	Line (x1, STATUS_CLIENT_TOP)-(x2, 259), pal.BLACK, bf
-End Sub
 Sub draw_info_bar() 
 	' 
 	Dim As Integer l = 42 

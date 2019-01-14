@@ -5,7 +5,7 @@
 '========================================================================================================================================
 Namespace MenuBar_
 	'========================================================================================================================================
-	Type TMenuButton As Button_.TButton 
+	'Type TMenuButton As Button_.TButton 
 	'========================================================================================================================================
 	Declare Function create_button(	ByRef txt As Const String, ByVal x As Integer, _
 												ByVal button_class As Button_.TButtonClass = Button_.TButtonClass.bcCommand, _ ' Integer = 1, _ 'Button_.TButtonClass = 1 ,_  'Button_.bcCommand, _
@@ -16,7 +16,8 @@ Namespace MenuBar_
 	Declare Sub destroy()   
 	Declare Sub draw_back() 
 	'========================================================================================================================================
-	Static Shared As TMenuButton Ptr buttons(Any) 
+	'Static Shared As TMenuButton Ptr buttons(Any)
+	Static Shared As Button_.TButton Ptr buttons(Any) 
 	'========================================================================================================================================
 	Function create_button(	ByRef txt As Const String, ByVal x As Integer, _
 									ByVal button_class As Button_.TButtonClass = Button_.TButtonClass.bcCommand, _ ' Integer = 1, _ 'Button_.TButtonClass = 1 ,_  'Button_.bcCommand, _
@@ -31,9 +32,9 @@ Namespace MenuBar_
 			n += 1
 		EndIf
 		ReDim Preserve MenuBar_.buttons(1 To n) 
-		MenuBar_.buttons(n) = New TMenuButton(Button_.bcCommand)
+		MenuBar_.buttons(n) = New Button_.TButton(Button_.bcCommand)
 
-		Dim As TMenuButton Ptr pB = MenuBar_.buttons(n)  
+		Dim As Button_.TButton Ptr pB = MenuBar_.buttons(n)  
 		*pB = Type<TRect>(x-6, MENU_BAR_TOP, x + (8 * Len(txt)) + 4, MENU_BAR_BOTTOM)
 		With *pB  
 			.name = id 
@@ -72,7 +73,7 @@ Namespace MenuBar_
 				n = i 	' index used to remove the item from the array later 
 				
 				' this section frees the memory and draws over the button 
-				Dim As TMenuButton Ptr pB = MenuBar_.buttons(i) 
+				Dim As Button_.TButton Ptr pB = MenuBar_.buttons(i) 
 				pB->draw_filled(pB->enabled_colors.back_color)
 				Line(pB->x1, pB->y1)-(pB->x2,pB->y1), pal.BLACK
 				Line(pB->x1, pB->y2)-(pB->x2,pB->y2), pal.BLACK
@@ -86,7 +87,7 @@ Namespace MenuBar_
 		u = UBound(p)
 		ReDim Preserve MenuBar_.buttons(l To u)  
 		For i As Integer = l To u
-			MenuBar_.buttons(i) = Cast(TMenuButton Ptr, p(i))
+			MenuBar_.buttons(i) = p(i)
 		Next
 	End Sub
 	Sub destroy() Destructor  

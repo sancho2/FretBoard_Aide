@@ -8,6 +8,8 @@ Namespace Notes_
 	Type TNoteSet 
 		As String * 2 notes(any)
 		As Integer count
+		Declare Sub lower_note(ByRef index As Integer, ByVal half_steps As Integer = 1) 
+		Declare Sub raise_note(ByRef index As Integer, ByVal half_steps As Integer = 1)  
 		Declare Sub add_note(ByRef note As Const String)
 		Declare Constructor(ByVal note_count As Integer)
 		Declare Constructor() 
@@ -43,7 +45,34 @@ Namespace Notes_
 	Declare Function get_half_step(ByRef note As Const String) As String  
 	Declare Function get_whole_step(ByRef note As Const String) As String  
 	Declare Function _get_note_index(ByRef note As Const String) As Integer
+	Declare Function get_half_step_down(ByRef note As Const String) As String 
 	'========================================================================================================================================
+		Sub TNoteSEt.lower_note(ByRef index As integer, ByVal half_steps As Integer = 1)
+			'
+			With This 
+				For i As Integer = 1 To half_steps
+					Dim As String s = Notes_.get_half_step_down(notes(index))
+					notes(index) = s 					 
+				Next
+			End With
+		End Sub
+		Sub TNoteSet.raise_note(ByRef index As Integer, ByVal half_steps As Integer = 1)
+			'
+			With This 
+				For i As Integer = 1 To half_steps
+					Dim As String s = Notes_.get_half_step(notes(index))
+					notes(index) = s 					 
+				Next
+			End With
+		End Sub
+	'========================================================================================================================================
+	Function get_half_step_down(ByRef note As Const String) As String 
+		'
+		Dim As Integer index = Notes_._get_note_index(note) 
+		If index = 0 Then Return ""
+		If index = 1 Then Return Notes_.notes(12) 
+		Return notes(index - 1)  
+	End Function
 	Function get_half_step(ByRef note As Const String) As String 
 		'
 		Dim As Integer index = Notes_._get_note_index(note) 
