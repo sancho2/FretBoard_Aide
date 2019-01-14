@@ -37,7 +37,7 @@ Namespace ModeMenu_
 		Get  (xx,yy)-Step(128, 54), restore_img 
 	
 		Line (x,y)-Step(128, 54), pal.BLUEGRAY, bf
-	
+		
 		x+=8: y+=4
 		hotspots(1) = create_hotspot("Note Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13))  
 	

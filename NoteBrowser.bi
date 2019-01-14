@@ -48,7 +48,7 @@ Namespace NoteBrowser_
 		MainMenu_.disable_menu()
 
 		' draw separater bar
-		Dim As Button_.TButton Ptr pMb = @(MenuBar_.get_button_by_name("help"))
+		Dim As Button_.TButton Ptr pMb = @(MenuBar_.pGet_button_by_name("help"))
 		x = Button_.draw_separater_bar(pMb) + 6 
 
 		' draw the notebar unselected
@@ -101,7 +101,7 @@ Namespace NoteBrowser_
 			Loop While key = ""
 			Select Case key
 				Case "a" To "g"
-					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key)) 
+					Dim As Button_.TButton Ptr pB = NoteBar_.pGet_button_by_name(key) 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)
@@ -109,7 +109,7 @@ Namespace NoteBrowser_
 						key = "-" & Trim(pB->Name) 
 					EndIf
 				Case "A" To "G"
-					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key & "#")) 
+					Dim As Button_.TButton Ptr pB = NoteBar_.pGet_button_by_name(key & "#") 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)

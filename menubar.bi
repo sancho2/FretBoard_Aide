@@ -11,7 +11,7 @@ Namespace MenuBar_
 												ByVal button_class As Button_.TButtonClass = Button_.TButtonClass.bcCommand, _ ' Integer = 1, _ 'Button_.TButtonClass = 1 ,_  'Button_.bcCommand, _
 												ByRef id As const String="", ByVal hotkey_index As Integer = 1, _
 												ByVal enabled As boolean = TRUE, ByVal show_me As boolean = TRUE) ByRef As Button_.TButton 
-	Declare Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Declare Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
 	Declare Sub remove_button_by_name(ByRef id As Const String)
 	Declare Sub destroy()   
 	Declare Sub draw_back() 
@@ -55,7 +55,7 @@ Namespace MenuBar_
 		Return *(MenuBar_.buttons(n)) 
 		
 	End Function 
-	Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
 		'
 		For i As Integer = 1 To UBound(MenuBar_.buttons) 
 			If MenuBar_.buttons(i)->Name = id Then Return *(MenuBar_.buttons(i))  

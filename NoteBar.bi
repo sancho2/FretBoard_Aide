@@ -10,7 +10,7 @@ Namespace NoteBar_
 	Declare Sub destroy() 
 	Declare Sub remove()  
 	Declare Sub set_selected(ByVal selected As boolean)
-	Declare Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Declare Function pGet_button_by_name(ByRef id As Const String) As Button_.TButton Ptr 
 	'========================================================================================================================================
 	Static Shared As Button_.TButton Ptr buttons(1 To 12)
 	'========================================================================================================================================
@@ -26,11 +26,11 @@ Namespace NoteBar_
 			'EndIf
 		Next
 	End Sub
-	Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Function pGet_button_by_name(ByRef id As Const String) As Button_.TButton Ptr 
 		'
 		For i As Integer = 1 To 12
 			If LCase(id) = LCase(Trim(NoteBar_.buttons(i)->name)) Then 
-				Return *buttons(i) 
+				Return buttons(i) 
 			EndIf
 		Next
 	End Function
@@ -41,7 +41,7 @@ Namespace NoteBar_
 			Dim As String s = Trim(Notes_.notes(i)) 
 			s = " " & s & " "
 			NoteBar_.buttons(i) = New Button_.TButton(Button_.TButtonClass.bcCommand)			
-			*(NoteBar_.buttons(i)) = MenuBar_.create_button(s , x,,s,,,FALSE)   
+			*(NoteBar_.buttons(i)) = MenuBar_.create_button(s , x,,s,0,,FALSE)   
   			x = NoteBar_.buttons(i)->x2 + 6 
 		Next
 		Return FALSE 

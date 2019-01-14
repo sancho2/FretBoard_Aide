@@ -181,7 +181,7 @@ Namespace ScaleBrowser_
 		MainMenu_.disable_menu() 
 		
 		' draw separater bar
-		Dim As Button_.TButton Ptr pMb = @(MenuBar_.get_button_by_name("help"))
+		Dim As Button_.TButton Ptr pMb = @(MenuBar_.pGet_button_by_name("help"))
 		x = Button_.draw_separater_bar(pMb) + 6 
 
 		' draw the notebar unselected
@@ -283,7 +283,7 @@ Namespace ScaleBrowser_
 			Loop While key = ""
 			Select Case key
 				Case "a" To "g"
-					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key)) 
+					Dim As Button_.TButton Ptr pB = NoteBar_.pGet_button_by_name(key) 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)
@@ -291,7 +291,7 @@ Namespace ScaleBrowser_
 						key = "-" & Trim(pB->Name) 
 					EndIf
 				Case "A" To "G"
-					Dim As Button_.TButton Ptr pB = @(NoteBar_.get_button_by_name(key & "#")) 
+					Dim As Button_.TButton Ptr pB = NoteBar_.pGet_button_by_name(key & "#") 
 					pB->toggle_selected()
 					If pB->selected = TRUE Then 
 						key = "+" & Trim(pB->Name)
@@ -495,8 +495,8 @@ Namespace ScaleBrowser_
 			NoteBar_.set_selected(FALSE) 
 			ScaleBrowser_.scale->clr_root()
 			ScaleBrowser_.reset_scale_buttons()
-			'NoteBar_.get_button_by_name(note).selected = TRUE
-			NoteBar_.get_button_by_name(note).draw_selected()   
+			'NoteBar_.pGet_button_by_name(note).selected = TRUE
+			(NoteBar_.pGet_button_by_name(note))->draw_selected()   
 		EndIf
 		ScaleBrowser_.scale->root = note
 		If ScaleBrowser_.scale->pattern <> "" Then 

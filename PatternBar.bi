@@ -10,7 +10,7 @@ Namespace PatternBar_
 	Declare Sub destroy() 
 	Declare Sub remove()  
 	Declare Sub set_selected(ByVal selected As boolean)
-	Declare Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Declare Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
 	'========================================================================================================================================
 	' the seventh pattern button will always be what step is necessary to get back to root (show it as passive)
 	Static Shared As Button_.TButton Ptr buttons(1 To 7)	
@@ -57,7 +57,7 @@ Namespace PatternBar_
 			PatternBar_.buttons(i)->Draw()
 		Next
 	End Sub
-	Function get_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
 		'
 		For i As Integer = 1 To 7
 			If LCase(id) = LCase(Trim(PatternBar_.buttons(i)->name)) Then 

@@ -86,7 +86,7 @@ Namespace Button_
 			As Button_.TButtonClass _class
 			
 			Declare Sub _init()
-			Declare Function _get_pColors() As Button_.TButtonColorSet Ptr			
+			Declare Function _pGet_colors() As Button_.TButtonColorSet Ptr			
 			Declare Sub _hilite()
 			Declare Sub _unhilite() 
 	End Type
@@ -160,25 +160,25 @@ Namespace Button_
 					.text_color = __CYAN 
 					.border_color = __BLACK
 					.back_color = __BLUEGRAY
-					.hotkey_color = __RED
+					.hotkey_color = __CYAN  '__GREEN '__RED
 				End With
 				With .disabled_colors
 					.text_color = __GRAY 
 					.border_color = __BLACK
 					.back_color = __BLUEGRAY
-					.hotkey_color = __BROWN
+					.hotkey_color = __GRAY 	'__BROWN
 				End With
 				With .selected_colors 
 					.text_color = __WHITE 
 					.border_color = __BLACK
 					.back_color = __DARK_CYAN
-					.hotkey_color = __BROWN	 
+					.hotkey_color = __CYAN	 
 				End With
 				With .unselected_colors 
 					.text_color = __CYAN 
 					.border_color = __BLACK
 					.back_color = __BLUEGRAY
-					.hotkey_color = __BROWN	 
+					.hotkey_color = __CYAN	 
 				End With
 				With .passive_colors 
 					.text_color = __WHITE 
@@ -188,7 +188,7 @@ Namespace Button_
 				End With
 			End With
 		End Sub
-		Function TButton._get_pColors() As Button_.TButtonColorSet Ptr 
+		Function TButton._pGet_colors() As Button_.TButtonColorSet Ptr 
 			'
 			With This 
 				If ._class = bcSelect OrElse ._class = bcRadio Then 
@@ -220,17 +220,19 @@ Namespace Button_
 			' 
 			With This 
 				If pColors = 0 Then
-					pColors = ._get_pColors()
+					pColors = ._pGet_colors()
 				EndIf
 				.draw_filled(pColors->back_color)
 				.draw_border(pColors->border_color)
 			
 				Dim As Integer hx = text_x + (8 * (.hotkey_index - 1))
-				Dim As String c = Mid(txt, .hotkey_index, 1) 
+'				Dim As String c = Mid(txt, .hotkey_index, 1) 
 
 				..Draw String (text_x, text_y), txt, pColors->text_color
 				If .hotkey_index > 0 Then 
-					..Draw String (hx, text_y), c, pColors->hotkey_color
+'					..Draw String (hx, text_y), c, pColors->hotkey_color
+					Line (hx, text_y + 16)-Step(7,1), pColors->hotkey_color, bf
+					Line (hx, text_y + 18)-Step(7,0), __DARK_BLUEGRAY		'pColors->hotkey_color, bf 
 				EndIf 
 			End With
 		End Sub
@@ -371,7 +373,7 @@ Namespace Button_
 		'========================================================================================================================================
 	Function draw_separater_bar(ByVal pButton As Button_.TButton Ptr) As Integer 
 		' draw separater bar and return the x2 
-		'Dim As Button_.TButton Ptr pMb = @(MenuBar_.get_button_by_name("help"))
+		'Dim As Button_.TButton Ptr pMb = @(MenuBar_.pGet_button_by_name("help"))
 		Dim As Integer x
 		x = pButton->x2 + 1
 		Dim As TSeparaterBar sb 
