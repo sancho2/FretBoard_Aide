@@ -12,7 +12,8 @@ As of Jan. 13, 2018 the program:
       - major, minor, major harmonic, minor harmonic, major melodic, minor melodic 
   - In both NoteBrowser and ScaleBrowser the notes are presented at the top as a set of 12 buttons. These can be pressed via mouse or by hotkeys. 
     - The hot keys for the natural notes are a, b, c, d, e, f, g. The hotkeys for the sharp notes are <shift> + a, b, c, d, e, f, g  
-There are going to be lots of issues at present but these I already know of: 
+
+	There are going to be lots of issues at present but these I already know of: 
 - Exit button doesn't work in any but the main menu (Press escape to back out of anywhere in the program)
 - Scale buttons don't react to mouse clicks 
 - Pattern buttons don't react to mouse clicks 
