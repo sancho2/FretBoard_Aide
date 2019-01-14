@@ -1,5 +1,5 @@
-# FretBoard_Aide
-This program has been renamed NoteBrowser. Fixing all occurances of the old name is a todo:  
+# NoteBrowser 
+This program has been renamed NoteBrowser from Fretboard_Aide. Fixing all occurances of the old name is a todo:  
 
 NoteBrowser: 
 This is a program written in FreeBASIC that is designed to visualize notes on a guitar fretboard.  
