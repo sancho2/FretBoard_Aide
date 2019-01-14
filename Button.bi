@@ -178,7 +178,7 @@ Namespace Button_
 					.text_color = __CYAN 
 					.border_color = __BLACK
 					.back_color = __BLUEGRAY
-					.hotkey_color = __CYAN	 
+					.hotkey_color = __CYAN ' 	 
 				End With
 				With .passive_colors 
 					.text_color = __WHITE 
