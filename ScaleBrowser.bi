@@ -131,7 +131,7 @@ Namespace ScaleBrowser_
 	'========================================================================================================================================
 	Static Shared As TScale Ptr scale 
 	'Dim Shared As String notes(any)
-	'Dim Shared As Integer note_count
+	Static Shared As Button_.TButton Ptr exit_btn 
 	Static Shared As Button_.TButton Ptr clear_btn 
 	Static Shared As Button_.TButton Ptr root_btn 
 	Static Shared As Button_.TButton Ptr major_btn 
@@ -178,7 +178,7 @@ Namespace ScaleBrowser_
 		ScaleBrowser_.scale = New TScale 
 	
 		' grey out main menu
-		MainMenu_.disable_menu() 
+		PrimaryMenu_.disable_menu() 
 		
 		' draw separater bar
 		Dim As Button_.TButton Ptr pMb = @(MenuBar_.pGet_button_by_name("help"))
@@ -251,6 +251,22 @@ Namespace ScaleBrowser_
 			EndIf
 		Next
 		
+		For i As Integer = 1 To 6 
+			Dim As Button_.TButton Ptr pB = PatternBar_.buttons(i) 
+			If pB->is_point_in_rect(pnt) = TRUE Then
+				key = "~" & PatternBar_.Flip_button(i)
+				Return 
+			EndIf
+		Next
+
+		If __MAJOR->poll(pnt) = TRUE Then
+			key = "j"
+			Return
+		EndIf
+		If __MINOR->poll(pnt) = TRUE Then 
+			key = "n"
+			Return 
+		EndIf
 		If __HARMONIC->poll(pnt) = TRUE Then 
 			key = "o"
 			Return 
@@ -259,15 +275,19 @@ Namespace ScaleBrowser_
 			key = "l"
 			Return 
 		EndIf
-		If (__CLEAR)->is_point_in_rect(pnt) Then 
+		If (__CLEAR)->is_point_in_rect(pnt) = TRUE Then 
 			key = "r"
+			Return 
+		EndIf
+		If ScaleBrowser_.exit_btn->poll(pnt) = TRUE Then 
+			key = "x" 
 			Return 
 		EndIf
 		key = ""
 	End Sub
 	Function main_loop() As boolean 
 		'
-		Dim As String key
+		Dim As String key, pattern_keys="!@#$%^"
 		Dim As boolean ok_to_exit = FALSE  
 		Dim As TGMouse mouse 
 		Do 
@@ -325,11 +345,28 @@ Namespace ScaleBrowser_
 				Case "l"
 					toggle_melodic() 
 					key = ""
+				Case "!", "@", "#", "$", "%", "^"			' pattern buttons
+					Dim As Integer n = InStr(pattern_keys, key) 
+					key = "~" & PatternBar_.Flip_button(n)
+ 
+				'Case "!"			' pattern button 1
+				'Case "@"			' pattern button 2
+				'Case "#"			' pattern button 3
+				'Case "$"			' pattern button 4
+				'Case "%"			' pattern button 5
+				'Case "^"			' pattern button 6
+
+				Case "x" 
+					Exit Do 
 				Case Chr(27)
 					Exit Do 
 				Case Else 
 					key = ""
 			End Select
+			If Left(key, 1) = "~" Then 
+				' change the scale pattern
+				key = ""
+			EndIf
 		Loop While ok_to_exit = FALSE
 		
 		on_exit() 
@@ -573,7 +610,7 @@ Namespace ScaleBrowser_
 		ScaleBrowser_.clear_notes()
 		ScaleBrowser_.remove_buttons() 
 
-		MainMenu_.enable_menu()
+		PrimaryMenu_.enable_menu()
 
 		' remove the separater bar 
 		Dim As Integer x = NoteBar_.buttons(1)->x1 - 4, y1 = NoteBar_.buttons(1)->y1, y2 = NoteBar_.buttons(1)->y2 

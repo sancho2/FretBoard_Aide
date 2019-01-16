@@ -1,147 +1,125 @@
 '========================================================================================================================================
 ' MainMenu.bi
 '========================================================================================================================================
-#Define __MainMenu__ 
+#Define __MainMenu__
 '========================================================================================================================================
 Namespace MainMenu_
-'========================================================================================================================================
 	'========================================================================================================================================
-	Declare Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
-	Declare Sub	show()
-	Declare Sub init() 
-	'Declare Sub disable_menu()
+	Declare Function show(ByRef parent_menu As TGrect) As boolean 
+	'Declare Function create_status_button(ByRef txt As Const String, ByVal x As Integer, ByVal hotkey_index As Integer) As TGRect
+	Declare Function note_browser() As boolean
+ 	Declare Function scale_browser() As boolean 
+	Declare Sub destroy() 
+	Declare Function create_hotspot(ByRef txt As Const String, ByVal x As Integer, ByVal y As Integer, _
+									ByVal bounds As TRect, ByVal hotkey_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
 	'========================================================================================================================================
-'---------------------------------------------------------    
-#Define __mode MainMenu_.buttons(1)
-#Define __file MainMenu_.buttons(2)
-#Define __help MainMenu_.buttons(3) 
-'---------------------------------------------------------    
- 
-	Static Shared As Button_.TButton Ptr buttons(Any) 
-	'========================================================================================================================================
-	Sub init()  
+	Private Function show(ByRef parent_menu As TGrect) As boolean 
 		'
-		Dim As Integer x
+	#Macro __HIDE_ACTION_MENU__()
+		' remove menu and replace background
+		Put (xx,yy), restore_img, PSet 
+		parent_menu.draw_border(pal.BLACK)
+	#EndMacro
+		' 
+		Dim As boolean ret_val 
+		Dim As Integer x, y 
+		Dim As Integer yy, xx 
+		Dim As TGRect hotspots(1 To 5)
+		Dim As Any Ptr restore_img  
 	
-		MenuBar_.draw_back()  
-
-		ReDim MainMenu_.buttons(1 To 3) 
+		' 
+		x = parent_menu.x1 
+		y = parent_menu.y2 + 2 
+		'draw menu
+		yy = y:xx=x
+	
+		restore_img = ImageCreate(129, 73,,32)
+		Get  (xx,yy)-Step(128, 72), restore_img 
+	
+		Line (x,y)-Step(128, 72), pal.BLUEGRAY, bf
 		
-		x = MENU_BAR_LEFT
-		__mode = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__mode) = MenuBar_.create_button("Main", x,,"mode",,,TRUE)
-
-
-		x = (__mode)->x2 + 6
-		__file = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__file) = MenuBar_.create_button("File", x,,"file",,FALSE, TRUE)
-
-		x = (__file)->x2 + 6
-		__help = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		*(__help) = MenuBar_.create_button("Help", x,,"help",,FALSE, TRUE)
-
-	End Sub 
-	Sub enable_menu() 
-		'
-		__mode->Draw_enabled()
-		__file->Draw_disabled() 			' todo: implement file menu
-		__help->draw_disabled()				' todo: implement help menu 
-
-	End Sub
-	Sub disable_menu()
-		'
-		__mode->draw_disabled() 
-		__file->draw_disabled()
-		__help->draw_disabled()
-	End Sub
-	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
-		'
-		' exit button 
-		If Main_.pExit_btn->is_point_in_rect(pnt) Then 
-			key = "x"
-			Return 
-		EndIf
-		' main button
-		If __mode->poll(pnt) = TRUE Then 
-			key = "m"
-			Return 
-		ElseIf __file->poll(pnt) = TRUE Then 
-			key = "f"
-			Return 
-		ElseIf __help->poll(pnt) = TRUE Then 
-			key = "h"
-			Return 
-		EndIf
-	End Sub
-	Sub show()
-		'
-		'__mode->draw()
-		'__file->Draw()
-		'__help->Draw() 
-
-		Dim As String key
+		x+=8: y+=4
+		hotspots(1) = create_hotspot("Note Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13))  
+	
+		y += 22
+		hotspots(2) = create_hotspot("Scale Browser", x, y, Type<TRect>(x-8, y-4, x+88, y+13))  
+	
+		y += 22  
+		hotspots(3) = create_hotspot("Exit", x, y, Type<TRect>(x-8, y-1, x+88, y+13), 2)  
+		
+		ret_val = TRUE 	
+		Dim As String key 
 		Dim As TGMouse mouse 
-		StatusBar_.draw_text("Main Menu")
-		Do
-			mouse.poll()
+		Do 
+			mouse.poll() 
 			If mouse.is_button_released(mbLeft) Then 
-				MainMenu_.poll_buttons(mouse, key)
-			EndIf 
-			If key = "" Then 
+				' button click
+				Dim As TPoint p = Cast(TPoint, mouse) 
+				If hotspots(1).is_point_in_rect(p) = TRUE Then				' note browser  
+					key = "n"
+				ElseIf hotspots(2).is_point_in_rect(p) = TRUE Then 		' scale browser 
+					key = "s" 
+				ElseIf hotspots(3).is_point_in_rect(p) = TRUE Then 		' scale browser 
+					key = "x" 
+				Else
+					key = ""
+				EndIf
+			EndIf
+			If key="" Then 
 				key = InKey()
 			EndIf
-			Select Case key 
-				Case "m"
-					'__mode ->hilite()
-					__mode->draw_selected() 
-					If ModeMenu_.show(*(__mode)) = FALSE Then Exit Do 
-					'__mode->unhilite()
-					__mode->draw_unselected()  
-					key=""
-				Case "f"
-					If __file->enabled = TRUE Then 
-						? "file menu not handled"
-						Sleep
-					EndIf 
-					key=""
-				Case "h"
-					If __help->enabled = TRUE Then 
-						?"help not handled"
-						Sleep
-					End If  
-					key=""
-				Case "x"
-					Exit Do 
-				Case Chr(27) 
-				Case Else 
-					key = ""
-				'Case "x", Chr(27)
-				'	Dim As TStatusText s = status_text 
-				'	If double_check_exit() = TRUE Then Exit Do
-				'	key = ""
-				'	draw_status_text(s)  
-			End Select
-			
 			Sleep 15, 1
-		Loop While key<>Chr(27) 
-
-	End Sub
-	Sub destroy() Destructor 
-		'
-
-		If __mode <> 0 Then 
-			Delete __mode
-			__mode = 0 
-		EndIf
-		If __file <> 0 Then 
-			Delete __file 
-			__file = 0
-		EndIf
-		If __help <> 0 Then 
-			Delete __help
-			__help = 0 
-		EndIf
-	End Sub
-
+		Loop While key = ""
+		Select Case key
+			Case "n" 			' show note browser
+				__HIDE_ACTION_MENU__()
+				note_browser()
+				'key = ""
+			Case "s" 			' scale browser 
+				__HIDE_ACTION_MENU__()
+				scale_browser()
+			Case "x"
+				ret_val = FALSE 
+				'key = ""
+		End Select
+		
+		__HIDE_ACTION_MENU__()
+		StatusBar_.draw_text("Main Menu") 
 	
+		ImageDestroy(restore_img) 
+		restore_img = 0
+		Return ret_val 
+	End Function
+	
+	Private Function create_hotspot(ByRef txt As Const String, ByVal x As Integer, ByVal y As Integer, _
+									ByVal bounds As TRect, ByVal hotkey_index As Integer = 1, ByVal clr As ULong = pal.RED) As TGRect
+		'
+		Dim As TGRect gr 
+		gr = Type<TRect>(bounds.x1, bounds.y1, bounds.x2, bounds.y2)
+		'gr.draw_filled(pal.BLUEGRAY)
+	
+		Dim As Integer hx = x + (8 * (hotkey_index - 1))
+		Dim As String c = Mid(txt, hotkey_index, 1) 
+
+		Draw String (x, y), txt, pal.CYAN
+		'Draw String (hx, y), c, pal.RED
+		Line (hx, y + 16)-Step(7,1), __CYAN, bf					'pColors->hotkey_color, bf
+		Line (hx, y + 18)-Step(7,0), __DARK_BLUEGRAY		'pColors->hotkey_color, bf 
+
+		Return gr
+	End Function
+	Private Function note_browser() As boolean
+		'
+		NoteBrowser_.init()
+		NoteBrowser_.main_loop()
+		Return FALSE  
+	End Function
+	Private Function scale_browser() As boolean 
+		ScaleBrowser_.init() 
+		ScaleBrowser_.main_loop()
+		Return FALSE 
+	End Function
+	Private Sub destroy() Destructor
+		'
+	End Sub
 End Namespace 

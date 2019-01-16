@@ -6,9 +6,8 @@
 Namespace NoteBrowser_
 	Static Shared As String notes(any)
 	Static Shared As Integer note_count
-	'Static Shared As Button_.TButton Ptr add_btn 
-	'Static Shared As Button_.TButton Ptr clear_btn
-	Static Shared As Button_.TButton Ptr clear_btn  
+	Static Shared As Button_.TButton Ptr clear_btn
+	Static Shared As Button_.TButton Ptr exit_btn   
 	'========================================================================================================================================
 	Declare Function main_loop() As boolean 
 	Declare Sub add_note(ByRef note As Const String) 
@@ -45,7 +44,7 @@ Namespace NoteBrowser_
 		StatusBar_.draw_text("Note Browser")
 
 		' grey out the main menu 
-		MainMenu_.disable_menu()
+		PrimaryMenu_.disable_menu()
 
 		' draw separater bar
 		Dim As Button_.TButton Ptr pMb = @(MenuBar_.pGet_button_by_name("help"))
@@ -77,8 +76,12 @@ Namespace NoteBrowser_
 			EndIf
 		Next
 		
-		If NoteBrowser_.clear_btn->is_point_in_rect(pnt) Then 
+		If NoteBrowser_.clear_btn->is_point_in_rect(pnt) = TRUE Then 
 			key = "r"
+			Return 
+		EndIf
+		If NoteBrowser_.exit_btn->poll(pnt) = TRUE Then
+			key = "x" 
 			Return 
 		EndIf
 		key = ""
@@ -130,6 +133,8 @@ Namespace NoteBrowser_
 				Case "r"
 					clear_notes() 
 					key = ""
+				Case "x" 
+					Exit Do 
 				Case Chr(27)
 					Exit Do 
 				Case Else 
@@ -159,7 +164,7 @@ Namespace NoteBrowser_
 		NoteBar_.remove()			' remove the note bar
 		NoteBar_.destroy() 
 
-		MainMenu_.enable_menu()			' enable the main menu 
+		PrimaryMenu_.enable_menu()			' enable the main menu 
 
 		NoteBrowser_.destroy() 
 	End Sub

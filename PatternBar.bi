@@ -11,6 +11,7 @@ Namespace PatternBar_
 	Declare Sub remove()  
 	Declare Sub set_selected(ByVal selected As boolean)
 	Declare Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
+	Declare Function Flip_button(ByVal index As Integer) As String 
 	'========================================================================================================================================
 	' the seventh pattern button will always be what step is necessary to get back to root (show it as passive)
 	Static Shared As Button_.TButton Ptr buttons(1 To 7)	
@@ -86,15 +87,34 @@ Namespace PatternBar_
 			PatternBar_.buttons(i)->Draw() 
 		Next
 	End Sub
+	Function Flip_button(ByVal index As Integer) As String 
+		'
+		Dim As Button_.TButton Ptr pB = PatternBar_.buttons(index) 
+		Select Case LCase(pB->txt) 
+			Case "+"
+				pB->txt = "H"
+			Case "w"
+				pB->txt = "+"
+			Case "h"
+				pB->txt = "W"
+		End Select
+		pB->Draw()
+
+		Dim As String ret_val 
+		For i As Integer = 1 To 6
+			ret_val &= pB->txt
+		Next
+		Return ret_val 
+	End Function 
 	Sub remove()
 		Dim As Button_.TButton Ptr pBl, pBr 
 		pBl = PatternBar_.buttons(1)
-		pBr = PatternBar_.buttons(6) 
+		pBr = PatternBar_.buttons(7) 
 		Line(pBl->x1+1, pBl->y1+1)-(pBr->x2, pBr->y2-1), pal.BLUEGRAY, bf 
 	End Sub
 	Sub destroy() Destructor  
 		'
-		For i As Integer = 1 To 6 
+		For i As Integer = 1 To 7 
 			If PatternBar_.buttons(i) <> 0 Then  
 				Delete PatternBar_.buttons(i) 
 				PatternBar_.buttons(i) = 0 

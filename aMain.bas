@@ -9,7 +9,7 @@ Const As ULong DEFAULT_SET_ROUND_COUNT = 5, DEFAULT_ROUND_COURSE_COUNT = 12, DEF
 Const As ULong GAME_BUTTON_LEFT = 220
 Const As Double PHASE_1_TIME = 10, PHASE_2_TIME = 30, PHASE_3_TIME = 50
 Const As ULong MENU_BAR_TOP = 27, MENU_BAR_BOTTOM = 53, MENU_BAR_LEFT = 220, MENU_BAR_RIGHT = 840
-Const As ULong STATUS_CLIENT_LEFT = 58, STATUS_CLIENT_TOP = 233, STATUS_CLIENT_RIGHT = 914, STATUS_CLIENT_BOTTOM = 259
+Const As ULong STATUS_CLIENT_LEFT = 58, STATUS_CLIENT_TOP = 233, STATUS_CLIENT_RIGHT = 914, STATUS_CLIENT_BOTTOM = 260
 Const As ULong STATUS_BAR_LEFT = 50, STATUS_BAR_TOP = 230, STATUS_BAR_RIGHT = 971, STATUS_BAR_BOTTOM = 263   
 '---------------------------------------------------------------------------------------------------------------------------------------
 '#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = @Main_._guitar
@@ -65,14 +65,15 @@ Const As ULong STATUS_BAR_LEFT = 50, STATUS_BAR_TOP = 230, STATUS_BAR_RIGHT = 97
 '========================================================================================================================================
 #Include Once "Palette.bi"
 #Include Once "Button.bi"
-#Include Once "Data.bi"  
+'#Include Once "Data.bi"  
 #Include Once "Guitar.bas"  
 '=======================================================================================================================================
 Namespace Main_ 
 
 	'=======================================================================================================================================
 	Static Shared As TGuitar Ptr _pGuitar
-	Static Shared As TGRect Ptr pExit_btn 
+	'Static Shared As TGRect Ptr pExit_btn
+	Static Shared As Button_.TButton Ptr pExit_btn 
 	'========================================================================================================================================
 	
 	'========================================================================================================================================
@@ -105,7 +106,7 @@ Namespace Main_
 	'----------------------------------------------------------------------------------------------
 	' forward declarations 
 	'----------------------------------------------------------------------------------------------
-	Namespace MainMenu_
+	Namespace PrimaryMenu_
 		Declare Sub enable_menu() 
 		Declare Sub disable_menu()
 	End Namespace
@@ -117,8 +118,8 @@ Namespace Main_
 	#Include Once "PatternBar.bi"
 	#Include Once "NoteBrowser.bi"
 	#Include Once "ScaleBrowser.bi"
-	#Include Once "ModeMenu.bi"
 	#Include Once "MainMenu.bi"
+	#Include Once "PrimaryMenu.bi"
 	'=======================================================================================================================================
 	'=======================================================================================================================================
 	#Include Once "Graphics.bi"
@@ -140,19 +141,15 @@ Namespace Main_
 		draw_guitar()
 	End Sub
 	Private Sub init_exit_button()
-		Dim As Integer x = 916, y = 234
-		Line (x, y)-Step(50,24), pal.BLUEGRAY, bf   
-		StatusBar_.draw_text("Exit", 926, pal.CYAN)
-		StatusBar_.draw_text("x", 934, pal.RED)
-	
-		'pExit_btn.hotspot = Type<TRect>(x, y, x+50, y+24)
-		pExit_btn = New TGRect
-		*pExit_btn = Type<TRect>(x, y, x+50, y+24)
+		Dim As Integer x = 932
+		Main_.pExit_btn = StatusBar_.create_button("Exit", x, Button_.TButtonClass.bcCommand, "exit", 2)
+		ScaleBrowser_.exit_btn = Main_.pExit_btn
+		NoteBrowser_.exit_btn = Main_.pExit_btn 
 	End Sub
 	Private Sub on_exit() Destructor
-		If pExit_btn <> 0 Then
-			Delete pExit_btn 
-			pExit_btn = 0
+		If Main_.pExit_btn <> 0 Then
+			Delete Main_.pExit_btn 
+			Main_.pExit_btn = 0
 		EndIf
 		? "destructor"
 	End Sub
@@ -162,7 +159,7 @@ End Namespace
 '__graphics(s)
 __graphics()  	
 Main_.init()
-Main_.MainMenu_.init() 
-Main_.MainMenu_.show()
+Main_.PrimaryMenu_.init() 
+Main_.PrimaryMenu_.show()
 ?"end" 
 
