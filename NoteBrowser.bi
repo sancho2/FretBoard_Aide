@@ -3,40 +3,29 @@
 '========================================================================================================================================
 #Define __NoteBrowser__
 '========================================================================================================================================
+#Ifdef __CLEAR
+	#Undef __CLEAR 
+#EndIf  
+#Define __CLEAR 		NoteBrowser_.pClear_btn
+'========================================================================================================================================
 Namespace NoteBrowser_
 	Static Shared As String notes(any)
 	Static Shared As Integer note_count
-	Static Shared As Button_.TButton Ptr clear_btn
-	Static Shared As Button_.TButton Ptr exit_btn   
+	Static Shared As Button_.TButton Ptr pClear_btn
 	'========================================================================================================================================
 	Declare Function main_loop() As boolean 
 	Declare Sub add_note(ByRef note As Const String) 
+	Declare Sub add_single_note(ByRef string_fret As Const String)
 	Declare Sub remove_note(ByRef note As Const String) 
-	Declare Sub draw_status() 
 	Declare Sub parse_input(ByRef txt As Const String) 	
 	Declare Sub draw_notes()
 	Declare Sub clear_notes()
 	'Declare Sub clear_status()
-	Declare Sub remove_buttons() 
 	Declare Sub on_exit()
 	Declare Sub destroy() 		'Destructor 
 	Declare Sub init()  
 	Declare Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 	'========================================================================================================================================
-	Sub remove_buttons() 
-		'MenuBar_.remove_button_by_name("add")
-		MenuBar_.remove_button_by_name("clr") 
-	End Sub
-	'Sub clear_status() 
-	'	'
-	'	Main_.Clear_status_bar(-1, 661)
-	'End Sub
-	Sub draw_status() 
-		'
-		Dim As String txt = "Notes: " & string_array_to_string(notes()) 
-		StatusBar_.draw_text(txt, 0,, FALSE)
-	
-	End Sub
 	Sub init()  
 		'
 		Dim As Integer x
@@ -56,12 +45,21 @@ Namespace NoteBrowser_
 		NoteBar_.Draw(FALSE)
 		
 		x = STATUS_CLIENT_LEFT
-		'NoteBrowser_.clear_btn = New Button_.TButton(Button_.TButtonClass.bcCommand)
-		NoteBrowser_.clear_btn = StatusBar_.create_button("Clr", x,,"clr",3)
+		__CLEAR = StatusBar_.create_button("Clr", x,,"clr",3)
 
+		'main_._pGuitar->_draw_hotspots()
+		'Sleep  
 	End Sub 
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 		'
+		' guitar hotspots
+		Dim As Integer strng, fret 
+		If Main_._pGuitar->is_point_in_hotspot(pnt, strng, fret) = TRUE Then
+			key = "~" & Str(strng) & " " & Str(fret)
+			Return  	
+		EndIf
+
+		'note buttons
 		For i As Integer = 1 To 12
 			Dim As Button_.TButton Ptr pB = NoteBar_.buttons(i) 
 			If pB->is_point_in_rect(pnt) = TRUE Then 
@@ -76,11 +74,14 @@ Namespace NoteBrowser_
 			EndIf
 		Next
 		
-		If NoteBrowser_.clear_btn->is_point_in_rect(pnt) = TRUE Then 
+		' clear button 
+		If __CLEAR->is_point_in_rect(pnt) = TRUE Then 
 			key = "r"
 			Return 
 		EndIf
-		If NoteBrowser_.exit_btn->poll(pnt) = TRUE Then
+		
+		'exit button
+		If Main_.pExit_btn->poll(pnt) = TRUE Then
 			key = "x" 
 			Return 
 		EndIf
@@ -119,7 +120,7 @@ Namespace NoteBrowser_
 					Else 
 						key = "-" & Trim(pB->Name) 
 					EndIf
-			End Select 
+			End Select
 			If Left(key, 1) = "+" Then
 				' add note
 				NoteBrowser_.add_note(Mid(key, 2)) 
@@ -128,6 +129,8 @@ Namespace NoteBrowser_
 				' remove note
 				NoteBrowser_.remove_note(Mid(key, 2)) 
 				key = "" 
+			ElseIf Left(key, 1) = "~" Then 
+				NoteBrowser_.add_single_note(Mid(key,2))
 			EndIf
 			Select Case key
 				Case "r"
@@ -149,7 +152,7 @@ Namespace NoteBrowser_
 	End Function
 	Sub on_exit()
 		'
-		NoteBrowser_.remove_buttons()		' remove the clear button  
+		'NoteBrowser_.remove_buttons()		' remove the clear button  
 		NoteBrowser_.clear_notes()			' clear the notes off the guitar 
 
 		' remove the separater bar 
@@ -171,8 +174,8 @@ Namespace NoteBrowser_
 	Sub destroy() Destructor 
 		'If NoteBrowser_.add_btn <> 0 Then Delete NoteBrowser_.add_btn
 		'NoteBrowser_.add_btn = 0 
-		If NoteBrowser_.clear_btn <> 0 Then Delete NoteBrowser_.clear_btn
-		NoteBrowser_.clear_btn = 0  
+		If __CLEAR <> 0 Then Delete __CLEAR
+		__CLEAR = 0  
 	End Sub
 	Sub clear_notes() 
 		'
@@ -193,6 +196,22 @@ Namespace NoteBrowser_
 			EndIf 
 		EndIf
 		NoteBrowser_.draw_notes()	
+	End Sub
+	Sub add_single_note(ByRef string_fret As Const String)
+		'
+		Dim As Integer strng, fret, n  
+		Dim As string note  
+		n = InStr(string_fret, " ") 
+		strng = Val(Left(string_fret, n-1))
+		fret = Val(Mid(string_fret, n + 1))
+		note = Main_._pGuitar->get_note(strng, fret) 
+		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
+			If is_value_in_array(note, NoteBrowser_.notes()) = FALSE Then 	' if this note isn't already in the list
+				Main_._pGuitar->draw_note(strng, fret) 
+			EndIf 
+		EndIf 
+		
+		   
 	End Sub
 	Sub remove_note(ByRef note As Const String) 
 		'

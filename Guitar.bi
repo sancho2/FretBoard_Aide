@@ -140,6 +140,8 @@ End Type
 	Function TGuitar.is_point_in_hotspot(ByVal pnt As TPoint, ByRef String_number As integer = 0, ByRef fret_number As Integer = 0) As boolean
 		'
 		With This 
+			'? "heelloo", pnt.y, ._hotspots(1,0).y1, ._hotspots(6,0).y2
+			'? pnt.x, ._hotspots(1,0).x1, ._hotspots(1,.fret_count-1).x2
 			Dim As Integer minY, maxY, minX, maxX
 			minY = ._hotspots(1,0).y1 
 			If pnt.y < minY Then Return FALSE 
@@ -148,7 +150,7 @@ End Type
 			
 			minX = ._hotspots(1,0).x1 
 			If pnt.x < minX Then Return FALSE 
-			maxX = ._hotspots(1,.fret_count).x2
+			maxX = ._hotspots(1,.fret_count-1).x2
 			If pnt.x > maxX Then Return FALSE  
 			
 			For i As Integer = 1 To 6

@@ -143,8 +143,6 @@ Namespace Main_
 	Private Sub init_exit_button()
 		Dim As Integer x = 932
 		Main_.pExit_btn = StatusBar_.create_button("Exit", x, Button_.TButtonClass.bcCommand, "exit", 2)
-		ScaleBrowser_.exit_btn = Main_.pExit_btn
-		NoteBrowser_.exit_btn = Main_.pExit_btn 
 	End Sub
 	Private Sub on_exit() Destructor
 		If Main_.pExit_btn <> 0 Then

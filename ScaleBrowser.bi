@@ -5,12 +5,26 @@
 '========================================================================================================================================
 #Define __ScaleBrowser__ 
 '========================================================================================================================================
-#Define __CLEAR 		ScaleBrowser_.clear_btn
+#Ifdef __CLEAR
+	#Undef __CLEAR 
+#EndIf  
+#Define __CLEAR 		ScaleBrowser_.pClear_btn
+#Ifdef __MAJOR
+	#Undef __MAJOR 
+#EndIf  
 #Define __MAJOR 		ScaleBrowser_.major_btn
+#Ifdef __MINOR
+	#Undef __MINOR 
+#EndIf  
 #Define __MINOR 		ScaleBrowser_.minor_btn
+#Ifdef __HARMONIC
+	#Undef __HARMONIC 
+#EndIf  
 #Define __HARMONIC 	ScaleBrowser_.harmonic_btn
+#Ifdef __MELODIC
+	#Undef __MELODIC 
+#EndIf  
 #Define __MELODIC		ScaleBrowser_.melodic_btn
-'#Define __root 	ScaleBrowser_.scale->root
 '========================================================================================================================================
 Namespace ScaleBrowser_
 	' the last step is removed as it just returns to root 
@@ -38,8 +52,8 @@ Namespace ScaleBrowser_
 		As String Name
 		As TScaleMode mode  
 		Declare Sub clr()
-		Declare Sub clr_root() 
-		Declare Sub clr_pattern()  
+		Declare Sub clear_root() 
+		Declare Sub clear_pattern()  
 		Declare Property pattern(ByRef value As Const String) 
 		Declare Property pattern() As Const String  
 		Declare Property root(ByRef value As Const String)
@@ -75,7 +89,7 @@ Namespace ScaleBrowser_
 		Property TScale.root(ByRef value As Const String)
 			'
 			With This 
-				.clr_root()
+				.clear_root()
 				._root = value
 				.add_note(value)
 				If ._pattern <> "" Then 
@@ -112,7 +126,7 @@ Namespace ScaleBrowser_
 				._pattern = ""
 			End With
 		End Sub
-		Sub TScale.clr_root() 
+		Sub TScale.clear_root() 
 			With This 
 				.name = ""
 				ReDim .notes(0 To 0) 
@@ -120,7 +134,7 @@ Namespace ScaleBrowser_
 				._root = ""
 			End With 
 		End Sub
-		Sub TScale.clr_pattern() 
+		Sub TScale.clear_pattern() 
 			With This 
 				.name = ""
 				ReDim Preserve .notes(0 To 0) 
@@ -129,11 +143,8 @@ Namespace ScaleBrowser_
 			End With
 		End Sub
 	'========================================================================================================================================
-	Static Shared As TScale Ptr scale 
-	'Dim Shared As String notes(any)
-	Static Shared As Button_.TButton Ptr exit_btn 
-	Static Shared As Button_.TButton Ptr clear_btn 
-	Static Shared As Button_.TButton Ptr root_btn 
+	Static Shared As TScale Ptr pScale 
+	Static Shared As Button_.TButton Ptr pClear_btn 
 	Static Shared As Button_.TButton Ptr major_btn 
 	Static Shared As Button_.TButton Ptr minor_btn
 	Static Shared As Button_.TButton Ptr harmonic_btn 
@@ -157,6 +168,7 @@ Namespace ScaleBrowser_
 	Declare Sub remove_note(ByRef note As Const String) 
 	Declare Sub toggle_harmonic()
 	Declare Sub toggle_melodic()
+	Declare Sub change_scale_pattern(ByRef new_pattern As Const String) 
 	'========================================================================================================================================
 	'Sub clear_status() 
 	'	'
@@ -175,7 +187,7 @@ Namespace ScaleBrowser_
 		StatusBar_.Clear_status_bar()
 		
 		' create a new scale object 
-		ScaleBrowser_.scale = New TScale 
+		ScaleBrowser_.pScale = New TScale 
 	
 		' grey out main menu
 		PrimaryMenu_.disable_menu() 
@@ -190,7 +202,7 @@ Namespace ScaleBrowser_
 
 		' draw status bar buttons 
 		x = STATUS_CLIENT_LEFT 
-		ScaleBrowser_.clear_btn = StatusBar_.create_button("Clr", x,,"clr",3)
+		ScaleBrowser_.pClear_btn = StatusBar_.create_button("Clr", x,,"clr",3)
 
 		' draw separater bar
 		x = Button_.draw_separater_bar(__CLEAR) + 6 
@@ -200,7 +212,7 @@ Namespace ScaleBrowser_
 		Dim As Button_.TButtonGroup Ptr pGroup = New Button_.TButtonGroup 
 
 		' major button
-		'x = ScaleBrowser_.clear_btn->x2 + 6
+		'x = ScaleBrowser_.pClear_btn->x2 + 6
 		'x = __CLEAR->x2 + 6  
 		'ScaleBrowser_.major_btn = StatusBar_.create_button("Major", x,Button_.TButtonClass.bcRadio,"major",3)
 		__MAJOR = StatusBar_.create_button("Major", x,Button_.TButtonClass.bcRadio,"major",3)
@@ -279,7 +291,8 @@ Namespace ScaleBrowser_
 			key = "r"
 			Return 
 		EndIf
-		If ScaleBrowser_.exit_btn->poll(pnt) = TRUE Then 
+		'If ScaleBrowser_.exit_btn->poll(pnt) = TRUE Then
+		If Main_.pExit_btn->poll(pnt) = TRUE Then   
 			key = "x" 
 			Return 
 		EndIf
@@ -328,7 +341,7 @@ Namespace ScaleBrowser_
 				ScaleBrowser_.remove_note(Mid(key, 2)) 
 				key = "" 
 			EndIf
-			Select Case key 
+			Select Case Left(key, 1)  
 				Case "j"
 					toggle_major() 
 					key = ""
@@ -348,6 +361,9 @@ Namespace ScaleBrowser_
 				Case "!", "@", "#", "$", "%", "^"			' pattern buttons
 					Dim As Integer n = InStr(pattern_keys, key) 
 					key = "~" & PatternBar_.Flip_button(n)
+					Locate 1,1:Print key
+				Case "~" 
+					' just let this pass
  
 				'Case "!"			' pattern button 1
 				'Case "@"			' pattern button 2
@@ -365,6 +381,7 @@ Namespace ScaleBrowser_
 			End Select
 			If Left(key, 1) = "~" Then 
 				' change the scale pattern
+				change_scale_pattern(key) 
 				key = ""
 			EndIf
 		Loop While ok_to_exit = FALSE
@@ -375,11 +392,11 @@ Namespace ScaleBrowser_
 	End Function
 	Sub show_scale_buttons()
 		'
-		For n As Integer = 0 To ScaleBrowser_.scale->count - 1
-			Dim As String note = LCase(Trim(ScaleBrowser_.scale->notes(n)))  
+		For n As Integer = 0 To ScaleBrowser_.pScale->count - 1
+			Dim As String note = LCase(Trim(ScaleBrowser_.pScale->notes(n)))  
 			For i As Integer = 1 To 12 
 				Dim As String s = LCase(Trim(NoteBar_.buttons(i)->Name)) 
-				If note = s And note <> LCase(ScaleBrowser_.scale->root) Then 
+				If note = s And note <> LCase(ScaleBrowser_.pScale->root) Then 
 					NoteBar_.buttons(i)->draw_passive() 
 				EndIf
 			Next
@@ -395,13 +412,13 @@ Namespace ScaleBrowser_
 	End Sub
 	Sub toggle_melodic()
 		'
-		If scale->mode = smNone Then Return		' if there is no current scale the melodic button should do nothing 
+		If pScale->mode = smNone Then Return		' if there is no current scale the melodic button should do nothing 
 		
-		Dim As TScale Ptr pS = ScaleBrowser_.scale
+		Dim As TScale Ptr pS = ScaleBrowser_.pScale
 
 		' clear everything since we are rebuilding everything anyway 
 		Main_._pGuitar->revert()
-		pS->clr_pattern()
+		pS->clear_pattern()
 		ScaleBrowser_.reset_scale_buttons()
 		__MELODIC->toggle_selected()
 
@@ -424,7 +441,7 @@ Namespace ScaleBrowser_
 				pS->pattern = MAJOR_PATTERN
 				pS->mode = smMajor
 				pS->Name = "Major"
-			ElseIf scale->mode = smMelodicMinor Then 
+			ElseIf pScale->mode = smMelodicMinor Then 
 				pS->pattern = MINOR_PATTERN
 				pS->mode = smMinor
 				pS->Name = "Minor"
@@ -438,13 +455,13 @@ Namespace ScaleBrowser_
 	End Sub
 	Sub toggle_harmonic()
 		'
-		If scale->mode = smNone Then Return		' if there is no current scale the harmonic button should do nothing 
+		If pScale->mode = smNone Then Return		' if there is no current scale the harmonic button should do nothing 
 		
-		Dim As TScale Ptr pS = ScaleBrowser_.scale
+		Dim As TScale Ptr pS = ScaleBrowser_.pScale
 
 		' clear everything since we are rebuilding everything anyway 
 		Main_._pGuitar->revert()
-		pS->clr_pattern()
+		pS->clear_pattern()
 		ScaleBrowser_.reset_scale_buttons()
 		__HARMONIC->toggle_selected()
 
@@ -467,7 +484,7 @@ Namespace ScaleBrowser_
 				pS->pattern = MAJOR_PATTERN
 				pS->mode = smMajor
 				pS->Name = "Major"
-			ElseIf scale->mode = smHarmonicMinor Then 
+			ElseIf pScale->mode = smHarmonicMinor Then 
 				pS->pattern = MINOR_PATTERN
 				pS->mode = smMinor
 				pS->Name = "Minor"
@@ -482,11 +499,11 @@ Namespace ScaleBrowser_
 	Sub toggle_major() 
 		'
 		Dim As Button_.TButton Ptr pB = ScaleBrowser_.major_btn
-		Dim As TScale Ptr pS = ScaleBrowser_.scale
+		Dim As TScale Ptr pS = ScaleBrowser_.pScale
 
 		' clear everything since we are rebuilding everything anyway 
 		Main_._pGuitar->revert()
-		pS->clr_pattern()
+		pS->clear_pattern()
 		ScaleBrowser_.reset_scale_buttons()
 		pB->toggle_selected()
 
@@ -505,11 +522,11 @@ Namespace ScaleBrowser_
 	Sub toggle_minor()
 		'
 		Dim As Button_.TButton Ptr pB = ScaleBrowser_.minor_btn
-		Dim As TScale Ptr pS = ScaleBrowser_.scale
+		Dim As TScale Ptr pS = ScaleBrowser_.pScale
 
 		' clear everything since we are rebuilding everything anyway 
 		Main_._pGuitar->revert()
-		pS->clr_pattern()
+		pS->clear_pattern()
 		ScaleBrowser_.reset_scale_buttons()
 		pB->toggle_selected()
 
@@ -527,16 +544,16 @@ Namespace ScaleBrowser_
 	Sub set_root_note(ByRef note As Const String)
 		'
 		' first check if there is already a root/scale
-		If ScaleBrowser_.scale->root <> "" Then
+		If ScaleBrowser_.pScale->root <> "" Then
 			Main_._pGuitar->revert() 
 			NoteBar_.set_selected(FALSE) 
-			ScaleBrowser_.scale->clr_root()
+			ScaleBrowser_.pScale->clear_root()
 			ScaleBrowser_.reset_scale_buttons()
 			'NoteBar_.pGet_button_by_name(note).selected = TRUE
 			(NoteBar_.pGet_button_by_name(note))->draw_selected()   
 		EndIf
-		ScaleBrowser_.scale->root = note
-		If ScaleBrowser_.scale->pattern <> "" Then 
+		ScaleBrowser_.pScale->root = note
+		If ScaleBrowser_.pScale->pattern <> "" Then 
 			ScaleBrowser_.show_scale_buttons() 
 		EndIf
 		ScaleBrowser_.draw_notes()
@@ -556,7 +573,7 @@ Namespace ScaleBrowser_
 	Sub remove_note(ByRef note As Const String) 
 		'
 		ScaleBrowser_.clear_notes()
-		ScaleBrowser_.scale->clr_root() 
+		ScaleBrowser_.pScale->clear_root() 
 		'If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
 		'	If is_value_in_array(note, ScaleBrowser_.notes()) = TRUE Then 	' if this note is in the list
 		'		 ScaleBrowser_.note_count -= 1
@@ -569,17 +586,73 @@ Namespace ScaleBrowser_
 	End Sub
 	Sub draw_notes() 
 		'
-		For i As Integer = 0 To ScaleBrowser_.scale->count-1	' .note_count
-			If ScaleBrowser_.scale->notes(i) = ScaleBrowser_.scale->root Then 
-				Main_._pGuitar->draw_note(ScaleBrowser_.scale->notes(i), pal.SAND)
+		For i As Integer = 0 To ScaleBrowser_.pScale->count-1	' .note_count
+			If ScaleBrowser_.pScale->notes(i) = ScaleBrowser_.pScale->root Then 
+				Main_._pGuitar->draw_note(ScaleBrowser_.pScale->notes(i), pal.SAND)
 			Else
-				Main_._pGuitar->draw_note(ScaleBrowser_.scale->notes(i))
+				Main_._pGuitar->draw_note(ScaleBrowser_.pScale->notes(i))
 			EndIf
 		Next
 	End Sub
+	Sub change_scale_pattern(ByRef new_pattern As Const String)
+		'
+		' One of the scale pattern buttons has been changed and we need to update the scale and notes showing 
+		' shut off the major, minor, harmonic, and melodic buttons unless the pattern matches 
+		Dim As String ns = uCase(Trim(new_pattern, "~")), os = UCase(ScaleBrowser_.pScale->pattern)  
+		If ns = os Then
+			' the scale remains the same 
+			Locate 1,1:Print "Scale pattern button changed but scale remains the same. Somethings not right in "; __FUNCTION__ ;" ";ns;" ";os  
+			Return 	' this should never happen
+		EndIf
+
+		Main_._pGuitar->revert()
+		ScaleBrowser_.pScale->clear_pattern()
+		ScaleBrowser_.reset_scale_buttons()
+
+		Select Case ns
+			case HARMONIC_MAJOR_PATTERN
+				__HARMONIC->draw_selected()
+				__MAJOR->draw_selected()  
+				__MELODIC->draw_unselected()
+				__MINOR->draw_unselected()
+			case HARMONIC_MINOR_PATTERN
+				__HARMONIC->draw_selected()
+				__MINOR->draw_selected()
+				__MAJOR->draw_unselected()  
+				__MELODIC->draw_unselected()
+			Case MELODIC_MAJOR_PATTERN
+				__HARMONIC->draw_unselected()  
+				__MAJOR->draw_selected()  
+				__MELODIC->draw_selected()
+				__MINOR->draw_unselected()
+			Case MELODIC_MINOR_PATTERN 
+				__MELODIC->draw_selected()
+				__MINOR->draw_selected()
+				__HARMONIC->draw_unselected()  
+				__MAJOR->draw_unselected()  
+			Case MAJOR_PATTERN 
+				__MAJOR->draw_selected()  
+				__HARMONIC->draw_unselected()  
+				__MELODIC->draw_unselected()
+				__MINOR->draw_unselected()
+			Case MINOR_PATTERN  
+				__MINOR->draw_selected()
+				__HARMONIC->draw_unselected()
+				__MAJOR->draw_unselected()  
+				__MELODIC->draw_unselected()
+			Case Else 
+				__HARMONIC->draw_unselected()
+				__MAJOR->draw_unselected()  
+				__MELODIC->draw_unselected()
+				__MINOR->draw_unselected()
+		End Select  
+		ScaleBrowser_.pScale->pattern = new_pattern
+		ScaleBrowser_.show_scale_buttons()
+		ScaleBrowser_.draw_notes()		  
+	End Sub
 	Sub destroy() Destructor 
-		If ScaleBrowser_.scale <> 0 Then Delete ScaleBrowser_.scale 
-		ScaleBrowser_.scale = 0 
+		If ScaleBrowser_.pScale <> 0 Then Delete ScaleBrowser_.pScale 
+		ScaleBrowser_.pScale = 0 
 
 		If ScaleBrowser_.major_btn <> 0 Then 
 			If ScaleBrowser_.major_btn->pGroup <> 0 Then 
@@ -604,11 +677,15 @@ Namespace ScaleBrowser_
 			Delete __HARMONIC 
 			__HARMONIC = 0 
 		EndIf
+		If __MELODIC <> 0 Then
+			Delete __MELODIC 
+			__MELODIC = 0 
+		EndIf
 	End Sub
 	Sub on_exit()
 		'
 		ScaleBrowser_.clear_notes()
-		ScaleBrowser_.remove_buttons() 
+		'ScaleBrowser_.remove_buttons() 
 
 		PrimaryMenu_.enable_menu()
 
@@ -627,13 +704,13 @@ Namespace ScaleBrowser_
 		ScaleBrowser_.destroy() 
 	End Sub
 	Sub remove_buttons() 
-		MenuBar_.remove_button_by_name("major") 
-		MenuBar_.remove_button_by_name("minor") 
+		'MenuBar_.remove_button_by_name("major") 
+		'MenuBar_.remove_button_by_name("minor") 
 	End Sub 
 	Sub clear_notes() 
 		'
 		Main_._pGuitar->revert()
-		ScaleBrowser_.scale->clr()
+		ScaleBrowser_.pScale->clr()
 	End Sub
 	
 End Namespace

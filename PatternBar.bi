@@ -12,6 +12,8 @@ Namespace PatternBar_
 	Declare Sub set_selected(ByVal selected As boolean)
 	Declare Function pGet_button_by_name(ByRef id As Const String) ByRef As Button_.TButton
 	Declare Function Flip_button(ByVal index As Integer) As String 
+	Declare Sub update_last_step()
+	Declare Function get_pattern() As String 
 	'========================================================================================================================================
 	' the seventh pattern button will always be what step is necessary to get back to root (show it as passive)
 	Static Shared As Button_.TButton Ptr buttons(1 To 7)	
@@ -87,6 +89,40 @@ Namespace PatternBar_
 			PatternBar_.buttons(i)->Draw() 
 		Next
 	End Sub
+	Function get_pattern() As String 
+		Dim As String ret_val 
+		For i As Integer = 1 To 6
+			ret_val &= PatternBar_.buttons(i)->txt  
+		Next
+		Return ret_val 
+	End Function
+	Sub update_last_step()
+		'
+		Dim As Integer n 
+		For i As Integer = 1 To 6
+			Select Case PatternBar_.buttons(i)->txt 
+				Case "W"
+					n += 2
+				Case "H"
+					n += 1
+				Case "+"
+					n += 3 
+			End Select
+		Next
+		Dim As String s 
+		Select Case 12 - n 
+			Case 1
+				s = "H"
+			Case 2
+				s = "W"
+			Case 3
+				s = "+"
+			Case Else
+				s = Mid(Str(Abs(12 - n)), 1, 1)
+		End Select
+		PatternBar_.buttons(7)->txt = s
+		PatternBar_.buttons(7)->draw_passive()
+	End Sub
 	Function Flip_button(ByVal index As Integer) As String 
 		'
 		Dim As Button_.TButton Ptr pB = PatternBar_.buttons(index) 
@@ -100,10 +136,8 @@ Namespace PatternBar_
 		End Select
 		pB->Draw()
 
-		Dim As String ret_val 
-		For i As Integer = 1 To 6
-			ret_val &= pB->txt
-		Next
+		PatternBar_.update_last_step() 
+		Dim As String ret_val = get_pattern()  
 		Return ret_val 
 	End Function 
 	Sub remove()

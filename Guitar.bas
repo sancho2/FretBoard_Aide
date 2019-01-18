@@ -117,13 +117,19 @@ Sub TGuitar._init_image()
 End Sub
 Sub TGuitar._draw_hotspots()
 	' draws the hotspots green - adjust s and/or f in for next loop to test
+	Locate 1,1:Print "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[["
 	With This 
-		For s As Integer = 1 To 6 Step 2 
-			For f As integer = 4 To 4  '.fret_count Step 2
-				Line .guitar_img, (_hotspots(s, f).x1, _hotspots(s,f).y1)-(_hotspots(s,f).x2, _hotspots(s,f).y2), __GREEN, bf 
+		For s As Integer = 1 To 6 'Step 2 
+			For f As integer = 0 To .fret_count - 1 'Step 2
+				Line (_hotspots(s, f).x1, _hotspots(s,f).y1)-(_hotspots(s,f).x2, _hotspots(s,f).y2), __GREEN, bf 
 			Next
 		Next
+		'Line .guitar_img, (.get_fret_x(2), 0)-Step(0,100), __red
+		'Line .guitar_img, (0, .get_string_center_y(2) - 8)-Step(100,0), __red
+		'P'ut (.left_x, .top_y), .guitar_img, PSet
+		 
 	End With 
+	
 End Sub
 Function TGuitar.get_random_fret(ByVal min As Integer = 0, ByVal max As Integer = -1) As Integer 
 	'
@@ -140,11 +146,11 @@ Sub TGuitar._init_hotspots()
 		For i As Integer = 1 To 6
 			Dim As Integer x1, y1, x2, y2 
 			'x1 = .left_x - 30: x2 = .left_x -1
-			x1 = 0: x2 = .get_fret_x(0) 				
-			y1 = .get_string_center_y(i) - 8:y2 = y1 + 16
+			x1 = 0 + .left_x: x2 = .get_fret_x(0) + .left_x 				
+			y1 = .top_y + .get_string_center_y(i) - 8:y2 = y1 + 16
 			._hotspots(i, 0) = Type<TRect>(x1,y1,x2,y2) 
-			For f As Integer = 1 To .fret_count
-				x1 = .get_fret_x(f - 1) + 1:x2 = .get_fret_x(f) - 1
+			For f As Integer = 1 To .fret_count - 1
+				x1 = .left_x + .get_fret_x(f - 1) + 1:x2 = .left_x + .get_fret_x(f) - 1
 				._hotspots(i, f) = Type<TRect>(x1,y1,x2,y2) 
 			Next
 		Next
