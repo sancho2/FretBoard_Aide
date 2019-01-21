@@ -254,6 +254,7 @@ Namespace Button_
 		Sub TButton.draw_passive() 
 			'
 			With This 
+				._is_selected =FALSE 
 				._is_passive = TRUE		' note that this is not how I handled selected or enabled
 				.draw()     
 			End With
@@ -269,6 +270,7 @@ Namespace Button_
 		Sub TButton.draw_selected()
 			'
 			With This 
+				._is_passive = FALSE 
 				._is_selected = TRUE 
 				.draw() 				
 			End With
@@ -354,6 +356,7 @@ Namespace Button_
 		Sub TButton.toggle_selected()
 			'
 			With This 
+				._is_passive = FALSE 			' selecting or unselecting a button removes passiveness
 				'If ._class = bcGroup Then
 				If .pGroup <> 0 Then  
 					'Locate 1,1:Print "moooo";timer

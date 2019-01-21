@@ -332,6 +332,14 @@ Private Function Split_tok_r(byref TEXT As String , byref DELIMIT As String ,  R
    if size1 > ctr then Redim preserve RET(1 To ctr)     'redim the array
    Return ctr
 end Function
+Private Function is_value_in_array OverLoad (ByRef s As Const String, array() As String Ptr) As boolean
+	'
+	For i As Integer = LBound(array) To UBound(array) 
+		If s = *(array(i)) Then Return TRUE 
+	Next
+	Return FALSE 
+End Function
+
 Private Function is_value_in_array(ByRef s As Const String, array() As String) As boolean
 	'
 	For i As Integer = LBound(array) To UBound(array) 
@@ -373,3 +381,21 @@ Private Sub remove_array_element(ByRef element As String, array() As String)
 	Next
 	ReDim Preserve array(l To n) 
 End Sub
+Private Function pRemove_array_element(ByRef element As String, array() As String Ptr) As String Ptr  
+	'
+	' remove element from string ptr array via string matching and return it  
+	Dim As Integer l, u, n
+	Dim As String Ptr pS   
+	l = LBound(array): u =  UBound(array)
+	For i As Integer = l To u
+		If element <> *(array(i)) Then
+			u -= 1 
+			n += 1
+			array(n) = array(i) 
+		Else 
+			pS = array(n) 
+		EndIf
+	Next
+	ReDim Preserve array(l To n)
+	Return pS  
+End Function 

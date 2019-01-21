@@ -5,26 +5,6 @@
 '========================================================================================================================================
 #Define __ScaleBrowser__ 
 '========================================================================================================================================
-#Ifdef __CLEAR
-	#Undef __CLEAR 
-#EndIf  
-#Define __CLEAR 		ScaleBrowser_.pClear_btn
-#Ifdef __MAJOR
-	#Undef __MAJOR 
-#EndIf  
-#Define __MAJOR 		ScaleBrowser_.major_btn
-#Ifdef __MINOR
-	#Undef __MINOR 
-#EndIf  
-#Define __MINOR 		ScaleBrowser_.minor_btn
-#Ifdef __HARMONIC
-	#Undef __HARMONIC 
-#EndIf  
-#Define __HARMONIC 	ScaleBrowser_.harmonic_btn
-#Ifdef __MELODIC
-	#Undef __MELODIC 
-#EndIf  
-#Define __MELODIC		ScaleBrowser_.melodic_btn
 '========================================================================================================================================
 Namespace ScaleBrowser_
 	' the last step is removed as it just returns to root 
@@ -205,15 +185,15 @@ Namespace ScaleBrowser_
 		ScaleBrowser_.pClear_btn = StatusBar_.create_button("Clr", x,,"clr",3)
 
 		' draw separater bar
-		x = Button_.draw_separater_bar(__CLEAR) + 6 
-		'x = Button_.draw_separater_bar(__CLEAR) + 6 
+		x = Button_.draw_separater_bar(__SBCLEAR) + 6 
+		'x = Button_.draw_separater_bar(__SBCLEAR) + 6 
 
 		' major and minor buttons belong to group (only one can be selected at a time) 
 		Dim As Button_.TButtonGroup Ptr pGroup = New Button_.TButtonGroup 
 
 		' major button
 		'x = ScaleBrowser_.pClear_btn->x2 + 6
-		'x = __CLEAR->x2 + 6  
+		'x = __SBCLEAR->x2 + 6  
 		'ScaleBrowser_.major_btn = StatusBar_.create_button("Major", x,Button_.TButtonClass.bcRadio,"major",3)
 		__MAJOR = StatusBar_.create_button("Major", x,Button_.TButtonClass.bcRadio,"major",3)
 		pGroup->Add(__MAJOR)
@@ -287,7 +267,7 @@ Namespace ScaleBrowser_
 			key = "l"
 			Return 
 		EndIf
-		If (__CLEAR)->is_point_in_rect(pnt) = TRUE Then 
+		If (__SBCLEAR)->is_point_in_rect(pnt) = TRUE Then 
 			key = "r"
 			Return 
 		EndIf
@@ -588,9 +568,9 @@ Namespace ScaleBrowser_
 		'
 		For i As Integer = 0 To ScaleBrowser_.pScale->count-1	' .note_count
 			If ScaleBrowser_.pScale->notes(i) = ScaleBrowser_.pScale->root Then 
-				Main_._pGuitar->draw_note(ScaleBrowser_.pScale->notes(i), pal.SAND)
+				Main_._pGuitar->draw_all_note(ScaleBrowser_.pScale->notes(i), pal.SAND)
 			Else
-				Main_._pGuitar->draw_note(ScaleBrowser_.pScale->notes(i))
+				Main_._pGuitar->draw_all_note(ScaleBrowser_.pScale->notes(i))
 			EndIf
 		Next
 	End Sub

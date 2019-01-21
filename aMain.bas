@@ -14,6 +14,16 @@ Const As ULong STATUS_BAR_LEFT = 50, STATUS_BAR_TOP = 230, STATUS_BAR_RIGHT = 97
 '---------------------------------------------------------------------------------------------------------------------------------------
 '#Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = @Main_._guitar
 #Define __dim_guitar_ptr Dim As TGuitar Ptr pGtr = Main_._pGuitar
+'---------------------------------------------------------------------------------------------------------------------------------------
+#Define __NBCLEAR 	NoteBrowser_.pClear_btn
+'---------------------------------------------------------------------------------------------------------------------------------------
+#Define __SBCLEAR 	ScaleBrowser_.pClear_btn
+#Define __MAJOR 		ScaleBrowser_.major_btn
+#Define __MINOR 		ScaleBrowser_.minor_btn
+#Define __HARMONIC 	ScaleBrowser_.harmonic_btn
+#Define __MELODIC		ScaleBrowser_.melodic_btn
+'---------------------------------------------------------------------------------------------------------------------------------------
+
 
 #Macro  __dim_string_fret()
 	Dim As Integer __string, __fret
@@ -159,5 +169,7 @@ __graphics()
 Main_.init()
 Main_.PrimaryMenu_.init() 
 Main_.PrimaryMenu_.show()
+cls
 ?"end" 
+'Sleep 
 

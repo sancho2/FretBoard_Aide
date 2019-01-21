@@ -29,7 +29,7 @@ Namespace NoteBar_
 	Function pGet_button_by_name(ByRef id As Const String) As Button_.TButton Ptr 
 		'
 		For i As Integer = 1 To 12
-			If LCase(id) = LCase(Trim(NoteBar_.buttons(i)->name)) Then 
+			If LCase(Trim(id)) = LCase(Trim(NoteBar_.buttons(i)->name)) Then 
 				Return buttons(i) 
 			EndIf
 		Next

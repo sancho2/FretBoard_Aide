@@ -1,15 +1,42 @@
 '========================================================================================================================================
+' TODO: unselecting a notebar button should leave passive button notes on the board, the clr button should unselect passive buttons   
 ' NoteBrowser.bi
 '========================================================================================================================================
 #Define __NoteBrowser__
 '========================================================================================================================================
-#Ifdef __CLEAR
-	#Undef __CLEAR 
-#EndIf  
-#Define __CLEAR 		NoteBrowser_.pClear_btn
+'#Define __NOTES NoteBrowser_.pNotes
+#Define __NOTES NoteBrowser_.pNotes
+#Define __NOTE(S,F) __NOTES[S * (Main_._pGuitar->fret_count - 1) + F]  
+#Define __NOTE_COUNT  (Main_._pGuitar->string_count * Main_._pGuitar->fret_count)  
 '========================================================================================================================================
 Namespace NoteBrowser_
-	Static Shared As String notes(any)
+	'Enum TBrowserNoteType
+	'	bntSingle
+	'	bntSet
+	'End Enum 
+	'Type TStringFret
+	'	As Integer strng 
+	'	As Integer fret 
+	'End Type
+	'Type TBrowserNotes
+	'	As TStringFret Ptr notes  
+	'	As Integer count   
+	'	Declare Sub clear_notes()
+	'End Type
+	'	Sub TBrowserNotes.clear_notes() 
+	'		
+	'	End Sub
+	'Type TGNote extends TFretNote
+	'	Declare Property showing() As boolean 
+	'	Private: 
+	'		As boolean _is_showing 	
+	'End Type
+	'Static Shared As TBrowserNotes Ptr pNotes  
+	'Static Shared As String notes(any)
+	'	Static Shared As TFretNote Ptr pFNotes(Any)
+	Static Shared As TFretNote Ptr pNotes  
+
+	'Static Shared As String Ptr pNotes(Any) 
 	Static Shared As Integer note_count
 	Static Shared As Button_.TButton Ptr pClear_btn
 	'========================================================================================================================================
@@ -21,9 +48,10 @@ Namespace NoteBrowser_
 	Declare Sub draw_notes()
 	Declare Sub clear_notes()
 	'Declare Sub clear_status()
-	Declare Sub on_exit()
+	Declare Sub on_exit() 
 	Declare Sub destroy() 		'Destructor 
 	Declare Sub init()  
+	Declare Sub init_fretnotes()
 	Declare Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 	'========================================================================================================================================
 	Sub init()  
@@ -45,11 +73,26 @@ Namespace NoteBrowser_
 		NoteBar_.Draw(FALSE)
 		
 		x = STATUS_CLIENT_LEFT
-		__CLEAR = StatusBar_.create_button("Clr", x,,"clr",3)
+		__NBCLEAR = StatusBar_.create_button("Clr", x,,"clr",3)
 
-		'main_._pGuitar->_draw_hotspots()
-		'Sleep  
+		init_fretnotes() 
+		'Locate 3,100:Print __NOTES[131].name 
 	End Sub 
+	Sub init_fretnotes()
+		'
+		Dim As Integer n 
+		' formula for note = (string * fret_count) + fret 
+		__NOTES = New TFretNote[Main_._pGuitar->string_count * Main_._pGuitar->fret_count]
+
+		For _string As Integer = 1 To 6 
+			For _fret As Integer = 0 To Main_._pGuitar->fret_count - 1
+				__NOTES[n].strng = _string
+				__NOTES[n].fret = _fret 
+				__NOTES[n].name = Main_._pGuitar->get_note(_string, _fret)
+				n += 1 
+			Next
+		Next
+	End Sub
 	Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 		'
 		' guitar hotspots
@@ -75,7 +118,7 @@ Namespace NoteBrowser_
 		Next
 		
 		' clear button 
-		If __CLEAR->is_point_in_rect(pnt) = TRUE Then 
+		If __NBCLEAR->is_point_in_rect(pnt) = TRUE Then 
 			key = "r"
 			Return 
 		EndIf
@@ -96,7 +139,7 @@ Namespace NoteBrowser_
 			Do
 				mouse.poll() 
 				If mouse.is_button_released(mbLeft) Then
-					poll_buttons(Cast(TPoint, mouse), key) 
+		  		 	poll_buttons(Cast(TPoint, mouse), key)
 				EndIf
 				If key = "" Then 
 					key = InKey()
@@ -124,6 +167,7 @@ Namespace NoteBrowser_
 			If Left(key, 1) = "+" Then
 				' add note
 				NoteBrowser_.add_note(Mid(key, 2)) 
+				Locate 1,1:Print "moo"
 				key = ""
 			ElseIf Left(key, 1) = "-" Then 
 				' remove note
@@ -171,55 +215,64 @@ Namespace NoteBrowser_
 
 		NoteBrowser_.destroy() 
 	End Sub
-	Sub destroy() Destructor 
-		'If NoteBrowser_.add_btn <> 0 Then Delete NoteBrowser_.add_btn
-		'NoteBrowser_.add_btn = 0 
-		If __CLEAR <> 0 Then Delete __CLEAR
-		__CLEAR = 0  
+	Sub destroy() Destructor
+		' 
+		If __NBCLEAR <> 0 Then Delete __NBCLEAR
+		__NBCLEAR = 0
+		
+		If __NOTES <> 0 Then 
+			Delete[] __NOTES
+		EndIf 
+		__NOTES = 0 
 	End Sub
 	Sub clear_notes() 
 		'
 		Main_._pGuitar->revert()
-		ReDim NoteBrowser_.notes(0 To 0)		' resize the array to 1 element because this is as low as I can go  							
-		NoteBrowser_.note_count = 0
+		For i As Integer = 0 To __NOTE_COUNT - 1
+			__NOTES[i].is_showing = FALSE 
+		Next
 		NoteBar_.set_selected(FALSE) 
-		'NoteBrowser_.clear_status() 
-		'NoteBrowser_.draw_status()
 	End Sub
 	Sub add_note(ByRef note As Const String) 
 		'
-		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
-			If is_value_in_array(note, NoteBrowser_.notes()) = FALSE Then 	' if this note isn't already in the list
-				 NoteBrowser_.note_count += 1
-				 ReDim Preserve NoteBrowser_.notes(1 To NoteBrowser_.note_count)
-				 NoteBrowser_.notes(NoteBrowser_.note_count) = UCase(note)  
-			EndIf 
-		EndIf
-		NoteBrowser_.draw_notes()	
+		' Show every occurance of selected note on the guitar 
+		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note
+			Main_._pGuitar->draw_all_note(note, __NOTES) 
+		EndIf 		 
+						
 	End Sub
 	Sub add_single_note(ByRef string_fret As Const String)
 		'
 		Dim As Integer strng, fret, n  
 		Dim As string note  
-		n = InStr(string_fret, " ") 
+		n = InStr(string_fret, " ")					' separate the string and fret values  
 		strng = Val(Left(string_fret, n-1))
 		fret = Val(Mid(string_fret, n + 1))
-		note = Main_._pGuitar->get_note(strng, fret) 
+		
+		note = Main_._pGuitar->get_note(strng, fret)		' get note from string and fret  
+		
 		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
-			If is_value_in_array(note, NoteBrowser_.notes()) = FALSE Then 	' if this note isn't already in the list
-				Main_._pGuitar->draw_note(strng, fret) 
+			'If is_value_in_array(note, NoteBrowser_.notes()) = FALSE Then 	' if this note isn't already in the list
+			'If is_value_in_array(note, __NOTES()) = FALSE Then
+			If __NOTE(strng, fret).is_showing = FALSE Then   
+				Main_._pGuitar->draw_note(strng, fret)		' draw the single note on the guitar 
+				' hilite the note button as passive 
+				NoteBar_.pGet_button_by_name(" " & note & " ")->draw_passive()  
 			EndIf 
 		EndIf 
-		
-		   
 	End Sub
 	Sub remove_note(ByRef note As Const String) 
 		'
 		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
-			If is_value_in_array(note, NoteBrowser_.notes()) = TRUE Then 	' if this note is in the list
-				 NoteBrowser_.note_count -= 1
-				 remove_array_element(Cast(String, note), NoteBrowser_.notes()) 
-			EndIf 
+			'If is_value_in_array(note, NoteBrowser_.notes()) = TRUE Then 	' if this note is in the list
+			'If is_value_in_array(note, __NOTES()) = TRUE Then 	' if this note is in the list
+			For i As Integer = 0 To __NOTE_COUNT
+				'If InStr(LCase(Trim(__NOTES[i].name)), "b")>0 Then ?"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[["
+				If LCase(note) = LCase(Trim(__NOTES[i].name)) Then 
+					Locate 1,1:Print "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+					__NOTES[i].is_showing = FALSE
+				EndIf 
+			Next  
 		EndIf
 		Main_._pGuitar->revert()
 		NoteBrowser_.draw_notes()	
@@ -227,8 +280,13 @@ Namespace NoteBrowser_
 	End Sub
 	Sub draw_notes() 
 		'
-		For i As Integer = 1 To NoteBrowser_.note_count
-			Main_._pGuitar->draw_note(NoteBrowser_.notes(i)) 
+		For i As Integer = 0 To __NOTE_COUNT
+			If __NOTES[i].is_showing = TRUE Then 
+				Main_._pGuitar->draw_note(__NOTES[i].strng, __NOTES[i].fret) 
+			EndIf
+			'?"looooooo "; *(__NOTES(i)), __NOTE_COUNT
+			'Main_._pGuitar->draw_note(NoteBrowser_.notes(i))
+			'Main_._pGuitar->draw_all_note(*(__NOTES(i))) 
 		Next
 	End Sub
 	

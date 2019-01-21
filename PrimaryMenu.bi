@@ -8,7 +8,8 @@ Namespace PrimaryMenu_
 	'========================================================================================================================================
 	Declare Sub poll_buttons(ByRef pnt As TPoint, ByRef key As String)
 	Declare Sub	show()
-	Declare Sub init() 
+	Declare Sub init()
+	Declare Sub destroy() 
 	'Declare Sub disable_menu()
 	'========================================================================================================================================
 '---------------------------------------------------------    
@@ -124,6 +125,7 @@ Namespace PrimaryMenu_
 			
 			Sleep 15, 1
 		Loop While key<>Chr(27) 
+		PrimaryMenu_.destroy()
 
 	End Sub
 	Sub destroy() Destructor 
@@ -141,6 +143,8 @@ Namespace PrimaryMenu_
 			Delete __help
 			__help = 0 
 		EndIf
+						'Locate 2,1:Print "ggggggggggggggggggggggggggggg";Timer:Sleep 
+
 	End Sub
 
 	
