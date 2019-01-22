@@ -156,22 +156,34 @@ Sub TGuitar._init_hotspots()
 		Next
 	End With 
 End Sub
-Sub TGuitar.revert(ByVal string_number As Integer, ByVal fret_number As Integer) 
+Function TGuitar._get_note_rect(ByVal _string As Integer, ByVal _fret As Integer) As TRect 
+	'
+	With This
+		Dim As TRect r 
+		r.x1 = .get_fret_center_x(_fret) - 8
+		r.x2 = r.x1 + 16 
+		r.y1 = .get_string_center_y(_string) - 8
+		r.y2 = r.y1 + 16
+		Return r 
+	End With 
+End Function
+Function TGuitar.undraw_note(ByVal string_number As Integer, ByVal fret_number As Integer) As String  
 	'
 	With This 
-		Dim As TRect Ptr r = @._hotspots(string_number, fret_number)
+		Dim As TRect r = ._get_note_rect(string_number, fret_number)  ' @._hotspots(string_number, fret_number)
 		Dim As Integer w,h
 		Dim As Any Ptr p  
-		w = r->Width 
-		h = r->height
+		w = r.Width 
+		h = r.height
 		p = ImageCreate(w, h) 
-		Get ._guitar_img, (r->x1, r->y1)-(r->x2, r->y2), p 
-		Put .guitar_img, (r->x1, r->y1), p, PSet
+		Get ._guitar_img, (r.x1, r.y1)-(r.x2, r.y2), p 
+		Put .guitar_img, (r.x1, r.y1), p, PSet
 		ImageDestroy p  
-		Paint() 
+		Paint()
+		Return .get_note(string_number, fret_number)  
 	End With
-End Sub
-Sub TGuitar.draw_note(ByVal string_number As Integer, ByVal fret_number As Integer, ByVal clr As ULong = &HFFFFFFFF) 
+End Function 
+Function TGuitar.draw_note(ByVal string_number As Integer, ByVal fret_number As Integer, ByVal clr As ULong = &HFFFFFFFF) As String  
 	'
 	With This 
 		Dim As Integer x, y
@@ -183,7 +195,8 @@ Sub TGuitar.draw_note(ByVal string_number As Integer, ByVal fret_number As Integ
 		note = ._strings(string_number).note(fret_number)  
 		
 		Draw String .guitar_img, (x,y), note, clr
-		.paint() 
+		.paint()
+		Return note  
 	End With   
 	
-End Sub
+End Function 

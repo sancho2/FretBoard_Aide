@@ -6,7 +6,7 @@
 '========================================================================================================================================
 '#Define __NOTES NoteBrowser_.pNotes
 #Define __NOTES NoteBrowser_.pNotes
-#Define __NOTE(S,F) __NOTES[S * (Main_._pGuitar->fret_count - 1) + F]  
+#Define __NOTE(S,F) __NOTES[(S - 1) * Main_._pGuitar->fret_count + F]  
 #Define __NOTE_COUNT  (Main_._pGuitar->string_count * Main_._pGuitar->fret_count)  
 '========================================================================================================================================
 Namespace NoteBrowser_
@@ -42,7 +42,9 @@ Namespace NoteBrowser_
 	'========================================================================================================================================
 	Declare Function main_loop() As boolean 
 	Declare Sub add_note(ByRef note As Const String) 
-	Declare Sub add_single_note(ByRef string_fret As Const String)
+	Declare Sub add_single_note(ByVal _string As Integer, ByVal _fret As Integer)
+	Declare Sub toggle_single_note(ByRef string_fret As Const String)
+	Declare Sub remove_single_note(ByVal _string As Integer, ByVal _fret As Integer)
 	Declare Sub remove_note(ByRef note As Const String) 
 	Declare Sub parse_input(ByRef txt As Const String) 	
 	Declare Sub draw_notes()
@@ -174,7 +176,8 @@ Namespace NoteBrowser_
 				NoteBrowser_.remove_note(Mid(key, 2)) 
 				key = "" 
 			ElseIf Left(key, 1) = "~" Then 
-				NoteBrowser_.add_single_note(Mid(key,2))
+				'NoteBrowser_.add_single_note(Mid(key,2))
+				NoteBrowser_.toggle_single_note(Mid(key,2))
 			EndIf
 			Select Case key
 				Case "r"
@@ -237,11 +240,20 @@ Namespace NoteBrowser_
 		'
 		' Show every occurance of selected note on the guitar 
 		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note
-			Main_._pGuitar->draw_all_note(note, __NOTES) 
+			Main_._pGuitar->draw_all_note(note, __NOTES)
+			'Locate 2,1:Print __NOTE(1,1).is_showing;"<<<" 
 		EndIf 		 
 						
 	End Sub
-	Sub add_single_note(ByRef string_fret As Const String)
+	'Sub add_single_note(ByRef string_fret As Const String)
+	Sub add_single_note(ByVal _string As Integer, ByVal _fret As Integer) 
+		'
+		Dim As String note 
+		__NOTE(_string, _fret).is_showing = TRUE 	' update the array 			
+		note = Main_._pGuitar->draw_note(_string, _fret)		' draw the single note on the guitar 
+		NoteBar_.pGet_button_by_name(" " & note & " ")->draw_passive()	' hilite the note button as passive  
+	End Sub
+	Sub toggle_single_note(ByRef string_fret As Const String)
 		'
 		Dim As Integer strng, fret, n  
 		Dim As string note  
@@ -252,14 +264,23 @@ Namespace NoteBrowser_
 		note = Main_._pGuitar->get_note(strng, fret)		' get note from string and fret  
 		
 		If Notes_._get_note_index(note) <> 0 Then		' if this is a valid note  
-			'If is_value_in_array(note, NoteBrowser_.notes()) = FALSE Then 	' if this note isn't already in the list
-			'If is_value_in_array(note, __NOTES()) = FALSE Then
-			If __NOTE(strng, fret).is_showing = FALSE Then   
-				Main_._pGuitar->draw_note(strng, fret)		' draw the single note on the guitar 
-				' hilite the note button as passive 
-				NoteBar_.pGet_button_by_name(" " & note & " ")->draw_passive()  
-			EndIf 
+			If __NOTE(strng, fret).is_showing = FALSE Then
+				'add_single_note(ByRef note As Const String)
+				add_single_note(strng, fret) 
+			Else 
+				remove_single_note(strng, fret) 
+			EndIf
 		EndIf 
+	End Sub
+	Sub remove_single_note(ByVal _string As Integer, ByVal _fret As Integer)
+		'
+		Dim As String note 
+		__NOTE(_string, _fret).is_showing = FALSE 			
+		note = Main_._pGuitar->undraw_note(_string, _fret)
+		Dim As Button_.TButton Ptr pB = NoteBar_.pGet_button_by_name(" " & note & " ")
+		If pB->selected = FALSE Then 
+			NoteBar_.pGet_button_by_name(" " & note & " ")->draw_unselected()	' unhilite the note button as passive (unselected = not passive)
+		EndIf    
 	End Sub
 	Sub remove_note(ByRef note As Const String) 
 		'
@@ -269,7 +290,7 @@ Namespace NoteBrowser_
 			For i As Integer = 0 To __NOTE_COUNT
 				'If InStr(LCase(Trim(__NOTES[i].name)), "b")>0 Then ?"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[["
 				If LCase(note) = LCase(Trim(__NOTES[i].name)) Then 
-					Locate 1,1:Print "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+					'Locate 1,1:Print "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
 					__NOTES[i].is_showing = FALSE
 				EndIf 
 			Next  

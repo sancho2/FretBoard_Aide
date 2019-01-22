@@ -104,18 +104,19 @@ Type TGuitar
 	Declare Sub draw_all_note(ByRef note As Const String, pNotes As TFretNote Ptr, ByVal clr As ULong = &hFFFFFFFF)
 	'Declare Sub draw_all_note(ByRef note As Const String, fnotes(Any) As TFretNote, ByRef count As Integer = 0, ByVal clr As ULong = &hFFFFFFFF)
 	Declare Sub draw_all_note(ByRef note As Const String, ByVal clr As ULong = &hFFFFFFFF)
-	Declare Sub draw_note(ByVal string_number As Integer, ByVal fret_number As Integer, ByVal clr As ULong = &HFFFFFFFF)
+	Declare Function draw_note(ByVal string_number As Integer, ByVal fret_number As Integer, ByVal clr As ULong = &HFFFFFFFF) As String 
 	Declare Function get_string_center_y(ByVal string_number As Integer) As Integer 
 	Declare function get_fret_x(ByVal fret_number As Integer) As Integer 
-	Declare function get_fret_center_x(ByVal fret_number As Integer) As Integer 
+	Declare function get_fret_center_x(ByVal fret_number As Integer) As Integer
+	Declare Function _get_note_rect(ByVal _string As Integer, ByVal _fret As Integer) As TRect 
 	Declare Function is_point_in_hotspot(ByVal pnt As TPoint, ByRef String_number As integer = 0, ByRef fret_number As Integer = 0) As boolean 
 	Declare Function get_random_fret(ByVal min As Integer = 0, ByVal max As Integer = -1) As Integer 
 	Declare Function get_random_string(ByVal min As Integer = 1, ByVal max As Integer = 6) As Integer
 	Declare Function get_note(ByVal string_number As Integer, ByVal fret_number As Integer) As String
 	'Declare Function get_all_note(ByVal note As Const String, fnotes(Any) As TFretNote) As Integer  
 	Declare Sub _draw_hotspots()
-	Declare Sub revert(ByRef note As Const String)
-	Declare Sub revert(ByVal string_number As Integer, ByVal fret_number As Integer)
+	Declare Sub undraw_note(ByRef note As Const String)
+	Declare Function undraw_note(ByVal string_number As Integer, ByVal fret_number As Integer) As String 
 	Declare Sub revert()  
 	'-------------------------------------------------- 
 	Declare Operator Cast() As Any Ptr		' returns guitar_img
@@ -168,13 +169,11 @@ End Type
 				For _fret As Integer = 0 To .fret_count - 1
 					Dim As String s = Trim(.get_note(_string,_fret))
 					If LCase(Trim(note)) = lcase(Trim(s)) Then
-						''count += 1
-						'ReDim Preserve fnotes(1 To count)
-						'fnotes(count) = Type<TFretNote>(_string, _fret, s)
 						Dim As Integer n = (_string * (.fret_count - 1)) + _fret
-						Locate 1,100:Print ">>>";n;"<<<" 
+						'Locate 1,30:Print ((1 - 1) * .fret_count ) + 1;" PPPPP"
 						pNotes[((_string - 1) * .fret_count ) + _fret].is_showing = TRUE 
 						.draw_note(_string, _fret, clr)
+						'Locate 1,40:Print pNotes[1].is_showing;" [[[[[[[[[[[[[[["
 					EndIf
 				Next
 			Next
@@ -270,14 +269,14 @@ End Type
 		End With
 	
 	End Sub
-	Sub TGuitar.revert(ByRef note As Const String)
+	Sub TGuitar.undraw_note(ByRef note As Const String)
 		'
 		With This 
 			For _string As Integer = 1 To 6 
 				For _fret As Integer = 0 To .fret_count
 					Dim As String s = Trim(.get_note(_string,_fret))
 					If LCase(note) = lcase(s) Then
-						.revert(_string, _fret)
+						.undraw_note(_string, _fret)
 					EndIf
 				Next
 			Next
